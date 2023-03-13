@@ -1,0 +1,133 @@
+/* Matrixgrid */
+.grid {
+  stroke: #9A8B7A;
+  stroke-width: 1px;
+  fill: #CF7D1C;
+}
+.gridselected {
+  stroke: #9A8B7A;
+  stroke-width: 4px;
+  fill: green;
+}
+.gridovered {
+  stroke: #9A8B7A;
+  stroke-width: 4px;
+  fill: #CF7D1C;
+}
+
+.butt, .adrp {
+  stroke: #9A8B7B;
+  stroke-width: 1px;
+  fill: #cf7d1d;
+}
+/* Adressenbereiche */
+.src {
+  stroke: white;
+  stroke-width: 0.5px;
+  fill:#8b2323;
+}
+.dst {
+  stroke: white;
+  stroke-width: 0.5px;
+  fill:green;
+}
+.proxy {
+  stroke: white;
+  stroke-width: 0.5px;
+  fill:red;
+}
+
+/* Zonenbereiche */
+.sourcezone {
+  stroke: white;
+  stroke-width: 1px;
+  fill:#8b2323;
+}
+.servicezone {
+  stroke: white;
+  stroke-width: 1px;
+  fill: burlywood;
+}
+.targetzone {
+  stroke: white;
+  stroke-width: 1px;
+  fill:forestgreen;
+}
+/* Zonenschrift */
+.zone {
+  color: white;
+  stroke-width: 0.1px;
+  font-family: 'Lora';
+  font-weight: normal;
+  font-size: 10px;
+}
+
+/* circle out */
+.cout {
+  stroke: gray;
+  stroke-width: 2px;
+  fill: white;
+}
+
+.coutovered {
+  stroke:gray;
+  stroke-width: 3px;
+  fill:ghostwhite;
+}
+
+.coutselected {
+  stroke:gray;
+  stroke-width: 3px;
+  fill:greenyellow;
+}
+
+.fwline {
+  stroke:red;
+  stroke-width: 2px;
+}
+
+.matrixT {
+  stroke: #9A8B7A;
+  stroke-width: 1px;
+  /* fill: blue; */
+  font-family: 'Lora';
+  font-weight: normal;
+  font-size: 10px;
+}
+
+.skala {
+  font-family: 'Lora';
+  font-weight: normal;
+  font-size: 8px;
+}
+
+
+.arc {
+  stroke: #9A8B7A;
+  fill: none;
+}
+.node {
+  fill: #EBD8C1;
+  stroke: #9A8B7A;
+  stroke-width: 1px;
+}
+
+circle.active {
+  fill: #FE9922;
+}
+path.active {
+  stroke: #FE9922;
+}
+circle.source {
+  fill: #93C464;
+}
+circle.target {
+  fill: #41A368;
+}
+#vis {
+  border: 1px solid;
+}
+
+button{
+  font-size: 1em;
+}

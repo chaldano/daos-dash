@@ -1,0 +1,17 @@
+id,role,salary
+T.MAN_ACCOUNT,role,salary
+T.MAN_TOE,role,salary
+T.MAN_DBMS,role,salary
+T.ALT_DELIVERY,role,salary
+T.INCORRECT_LOAD,role,salary
+T.ADMIN_ERROR,role,salary
+T.CONFIG_INTEGRITY,role,salary
+T.CONFIG_CHANGE,role,salary
+T.LEAST_PRIVILAGE,role,salary
+T.UNAUTH_ACCESS,role,salary
+T.TSF_COMPROMISE,role,salary
+OSP.LABEL,role,salary
+OSP.PW_CHANGE,role,salary
+OSP.AUDIT,role,salary
+A.ENV,role,salary
+A.VPNBOX,role,salary

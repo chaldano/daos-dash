@@ -1,0 +1,62 @@
+.grid {
+  stroke: #9A8B7A;
+  stroke-width: 1px;
+  fill: #CF7D1C;
+}
+.arc {
+  stroke: #9A8B7A;
+  fill: none;
+}
+.node {            
+  fill: #EBD8C1;
+  stroke: #9A8B7A;
+  stroke-width: 1px;
+}
+
+circle.active {
+  fill: #FE9922;
+}
+path.active {
+  stroke: #FE9922;
+}
+circle.source {
+  fill: #93C464;
+}
+circle.target {
+  fill: #41A368;
+}
+.translate {
+    stroke: green;
+    stroke-width: 2;
+    fill: none;
+    }
+    
+  .rotate {
+    stroke: red;
+    stroke-width: 2;
+    fill: none;
+    }
+    
+  .reference {
+    stroke: blue;
+    border: solid 1px blue;
+    }
+    
+    table { border-spacing: 0;
+    }
+    
+    th {
+    background-color: black; 
+    font-weight: bold; 
+    color: lightgrey; text-align: 
+    left; padding: 5px;
+    }
+    
+    td {
+    border-top: 1px solid darkgrey; 
+    padding: 5px;
+    }
+    
+    tbody tr:hover {
+    background-color: lightgrey; 
+    }

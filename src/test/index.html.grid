@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>TrustKBB Example</title>
+    <!-- <script defer src="./../js/indextest.js"></script> -->
+    <link href="./container.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>My First Heading</h1>
+    </header>
+    <div id='main' class='container'>
+        <div id='box1' class='flex-item'>
+            <!-- <div class='table'>
+                <!-- <div class='table-header-group'>
+                    <div class='table-cell'>ID</div>
+                    <div class='table-cell'>Value</div>
+                </div> -->
+                <div class='table-row'>
+                    <div class='table-cell'>1</div>
+                    <div class='table-cell'>Value1</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>2</div>
+                    <div class='table-cell'>Value2</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>3</div>
+                    <div class='table-cell'>Value3 "noch ein Wert" "und noch ein Wert" "und noch ein Wert" "und noch ein Wert"</div>
+                    <div class='table-cell'>Value3 "noch ein Wert" "und noch ein Wert" "und noch ein Wert" "und noch ein Wert"</div>
+                    <!-- <div class='table-cell'>Value3 </div> -->
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>4</div>
+                    <div class='table-cell'>Value4</div>
+                    <div class='table-cell'>Value4</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>5</div>
+                    <div class='table-cell'>Value5</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>6</div>
+                    <div class='table-cell'>Value6</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>7</div>
+                    <div class='table-cell'>Value7</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>8</div>
+                    <div class='table-cell'>Value8</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>9</div>
+                    <div class='table-cell'>Value9</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>10</div>
+                    <div class='table-cell'>Value10</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>1</div>
+                    <div class='table-cell'>Value1</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>2</div>
+                    <div class='table-cell'>Value2</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>3</div>
+                    <div class='table-cell'>Value3</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>4</div>
+                    <div class='table-cell'>Value4</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>5</div>
+                    <div class='table-cell'>Value5</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>6</div>
+                    <div class='table-cell'>Value6</div>
+                    <div class='table-cell'>Value63 und noch mehr Text</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>7</div>
+                    <div class='table-cell'>Value7</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>8</div>
+                    <div class='table-cell'>Value8</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>9</div>
+                    <div class='table-cell'>Value9</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>10</div>
+                    <div class='table-cell'>Value10</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>1</div>
+                    <div class='table-cell'>Value1</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>2</div>
+                    <div class='table-cell'>Value2</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>3</div>
+                    <div class='table-cell'>Value3</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>4</div>
+                    <div class='table-cell'>Value4</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>5</div>
+                    <div class='table-cell'>Value5</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>6</div>
+                    <div class='table-cell'>Value6</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>7</div>
+                    <div class='table-cell'>Value7</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>8</div>
+                    <div class='table-cell'>Value8</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>9</div>
+                    <div class='table-cell'>Value9</div>
+                </div>
+                <div class='table-row'>
+                    <div class='table-cell'>10</div>
+                    <div class='table-cell'>Value10</div>
+                </div>
+                <!-- <div class='table-footer-group'>
+                    <div class='table-cell'>ID</div>
+                    <div class='table-cell'>Value</div>
+                </div> -->
+                
+            </div> -->
+        </div>
+        <div id='box2' class='flex-item'></div>
+        <div id='box3' class='flex-item'></div>
+        <div id='box4' class='flex-item'></div>
+        <div id='box5' class='flex-item'></div>
+        <div id='box6' class='flex-item'></div>
+        <div id='box7' class='flex-item'></div>
+    </div>
+
+
+</body>
+
+</html>

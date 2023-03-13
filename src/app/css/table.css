@@ -1,0 +1,80 @@
+.tabBox {
+  height: 100%;
+  background-color: red;
+  /* overflow-y: scroll; */
+  /* margin-top: auto;
+  margin-bottom: auto; */
+
+}
+
+.table {
+  /* display: block; */
+  padding: 15px;
+  background-color: yellow;
+  font-family: 'Lora';
+    font-weight: normal;
+    font-size: 12px;
+
+}
+
+.table-header{
+  position: sticky;
+  background-color: green;
+  top: 0;
+}
+
+/* .table-hover{
+  color: green;
+  
+} */
+
+/* .table-header:nth-child(1) {background: wheat; align-self: flex-start;flex-basis: 30%;} */
+/* .table-header:nth-child(1) {background: wheat;} */
+/* .table-header:nth-child(2) {background: lightgreen;} */
+/* .table-header:nth-child(2) {background: lightgreen; align-self: flex-start;flex-basis: 70%;} */
+
+.table-headers{
+  /* display: flex; */
+  /* flex-direction: row; */
+  height: 15%;
+  align-items: center;
+  text-align:center;
+}
+
+.table-footers{
+  /* display: flex; */
+  /* flex-direction: row; */
+  height: 5%;
+  /* align-items: center; */
+  text-align:center;
+}
+.table-footer:nth-child(1) {background: wheat; align-self: flex-start;flex-basis: 30%;}
+.table-footer:nth-child(2) {background: lightgreen; align-self: flex-start;flex-basis: 70%;}
+
+.table-row {
+/* display: flex; */
+border: 0.1px solid blue;
+/* flex-direction: row; */
+/* flex-shrink: 0; */
+height: 7%;
+align-items: center;
+justify-content: start;
+}
+
+.table-cell {
+  /* color:black; */
+  /* align-items: flex-end; */
+  font-weight: normal;
+  font-size: 12px;
+
+  }
+  /* .table-cell:nth-child(1) {background: wheat;text-align:center;} */
+  /* .table-cell:nth-child(2) {background: lightgreen;} */
+  
+  /* tbody tr:hover, tfoot tr:hover { 
+    background-color:#fffbf0;
+  }
+  
+  tbody td:hover, tfoot td:hover { 
+    background-color: #fce4a2; 
+  } */

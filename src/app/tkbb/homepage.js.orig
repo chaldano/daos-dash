@@ -1,0 +1,138 @@
+import _, { isLength } from 'lodash';
+
+import { DomElement } from 'TkbbFolder/dom/html.js';
+import { registerButtonFunction } from 'TkbbFolder/dom/html.js';
+import { registerFormFunction } from 'TkbbFolder/dom/html.js';
+
+import { RunMatrix } from 'TkbbFolder/boxbuttons/box1/buttonsb1b1.js';
+import { RunTable } from 'TkbbFolder/boxbuttons/box1/buttonsb1b2.js';
+import { RunForm } from 'TkbbFolder/boxbuttons/box1/buttonsb1Submit.js';
+// import { FB1Button1 } from 'TkbbFolder/boxbuttons/box1/buttonsb1b1.js';
+// import { FB2Button1 } from 'TkbbFolder/boxbuttons/box2/buttonsb2b1.js';
+// import { FB3Button1 } from 'TkbbFolder/boxbuttons/box3/buttonsb3b1.js';
+
+const Adresse = [
+  {
+    name: 'Joerg',
+    vorname: 'Kebbedies',
+  },
+  {
+    name: 'Jürgen',
+    vorname: 'Schmidt',
+  }
+]
+
+function mainPage() {
+  const element = document.createElement('main');
+  // element.innerHTML = _.join(['DAoS', 'AuthorityGUI', 'from', 'TrustKBB Domain'], ' ');
+  element.classList.add('mainclass');
+  element.id = 'main';
+  return element;
+}
+
+function createHTML() {
+
+  document.body.appendChild(mainPage());
+  const divMain = new DomElement({ targetid: 'main', ownid: 'ConID', type: 'div' })
+  divMain.addClass('container')
+
+  // MAX-flex-items anlegen
+  let boxMax = 2;
+  for (let i = 0; i < boxMax; i++) {
+    let boxID = 'b' + i;
+    let boxClass = 'box-item';
+    
+    console.log("ID: " + boxID);
+    // Lege Flexbox an
+    const divFlexBox = new DomElement({ targetid: 'ConID', ownid: boxID, type: 'div' })
+    divFlexBox.addClass(boxClass)
+    // Lege Flexbox-Navigation an
+    new DomElement({ targetid: boxID, ownid: boxID + 'navi', type: 'box-navi' })
+  }
+
+
+  // Buttons Box0 (Matrix)
+  const Buttonb01 = new DomElement({ targetid: 'b1' + 'navi', ownid: 'b1button1', type: 'button' })
+  Buttonb01.addContent ('Matrix: Security Objectives - Security Problem') 
+  
+  // Buttons Box1
+  const Buttonb02 = new DomElement({ targetid: 'b1' + 'navi', ownid: 'b1button2', type: 'button' })
+  Buttonb02.addContent ('Tabelle') 
+  
+  // Form: Eingabe Name + Vorname
+  const Form01 = new DomElement({ targetid: 'b1', ownid: 'form1', type: 'form' })
+  // Form01.addAttribute('action','http://localhost:8080/adressen')
+  // Form01.addAttribute('action','b1Submit')
+  // Form01.addAttribute('method','post')
+  
+  // Label + Input Vorname
+  
+  const Label1 = new DomElement({ targetid: 'form1', ownid: 'lab1', type: 'label' })  
+  Label1.addAttribute('for','lvorname')
+  Label1.addContent('Vorname:')
+  
+  const Input1 = new DomElement({ targetid: 'form1', ownid: 'lvorname', type: 'input' })
+  Input1.addAttribute('type','text')
+  Input1.addAttribute('name','lvorname')
+  Input1.addAttribute('value','Joerg')
+  let nwl = new DomElement({ targetid: 'form1', type: 'br' })
+  
+  // Label + Input Nachname
+  const Label2 = new DomElement({ targetid: 'form1', ownid: 'lab2', type: 'label' })
+  Label2.addAttribute('for','lnachname')
+  Label2.addContent('Name:')
+  
+  const Input2 = new DomElement({ targetid: 'form1', ownid: 'lnachname', type: 'input' })
+  Input2.addAttribute('type','text')
+  Input2.addAttribute('name','lnachname')
+  Input2.addAttribute('value','Kebbedies')
+  nwl = new DomElement({ targetid: 'form1', type: 'br' })
+  
+  const Label3 = new DomElement({ targetid: 'form1', ownid: 'lab3', type: 'label' })
+  Label3.addAttribute('for','ladresse')
+  Label3.addContent('Adresse:')
+  
+  const Input3 = new DomElement({ targetid: 'form1', ownid: 'ladresse', type: 'input' })
+  Input3.addAttribute('type','text')
+  Input3.addAttribute('name','ladresse')
+  Input3.addAttribute('value','Breiter Weg')
+  nwl = new DomElement({ targetid: 'form1', type: 'br' })
+  
+  const Label4 = new DomElement({ targetid: 'form1', ownid: 'lab4', type: 'label' })
+  Label4.addAttribute('for','lnummer')
+  Label4.addContent('Hausnummer:')
+  
+  const Input4 = new DomElement({ targetid: 'form1', ownid: 'lnummer', type: 'input' })
+  Input4.addAttribute('type','text')
+  Input4.addAttribute('name','lnummer')
+  Input4.addAttribute('value','35')
+  nwl = new DomElement({ targetid: 'form1', type: 'br' })
+  
+  // Input Submit
+  
+  const Submit = new DomElement({ targetid: 'form1', ownid: 'b1Submit', type: 'input' })
+  // const Submit = new DomElement({ targetid: 'form1', ownid: 'b1Submit', type: 'button' })
+  // const Submit = new DomElement({ targetid: 'form1', ownid: 'b1Submit'})
+  Submit.addAttribute('type','submit')
+  // Submit.addContent('Senden')
+  nwl = new DomElement({ targetid: 'form1', type: 'br' })
+  
+
+  registerButtonFunction('b1button1', RunMatrix);
+  registerButtonFunction('b1button2', RunTable);
+  registerFormFunction('form1', RunForm);
+
+  // document.getElementById('form1').addEventListener('submit', RunForm)
+//   document.getElementById('form1').addEventListener('submit', function(evt){
+//     evt.preventDefault();
+//     console.log("Submit ...")
+//     RunForm()
+// })
+
+// registerButtonFunction('b1button3', FB1Button2);
+  // registerButtonFunction('b2button1', FB2Button1);
+  // registerButtonFunction('b3button1', FB3Button1);
+  
+}
+
+export { createHTML };
