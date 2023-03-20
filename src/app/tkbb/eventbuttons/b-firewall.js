@@ -1,9 +1,13 @@
 import { requestData } from 'TkbbFolder/net/client.js';
 
+// import 'TkbbFolder/dom/html.js';
 import { createDisplayBox } from 'TkbbFolder/dom/html.js';
 import { createContentBox } from 'TkbbFolder/dom/html.js';
 import { createDetailBox } from 'TkbbFolder/dom/html.js';
-import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
+import { createTaskBox } from 'TkbbFolder/dom/html.js';
+
+import { removeTaskBox } from 'TkbbFolder/dom/html.js';
+import { removeAllBox } from 'TkbbFolder/dom/html.js';
 
 import { createTable } from 'TkbbFolder/tables/tabbasic.js';
 import { putTableHeader } from 'TkbbFolder/tables/tabbasic.js';
@@ -12,7 +16,6 @@ import { putTableDetail } from 'TkbbFolder/tables/tabbasic.js';
 import { putAdrDetail } from 'TkbbFolder/tables/tabbasic.js';
 import { RunFirewallD3 } from 'TkbbFolder/eventbuttons/b-d3fwAddresses.js';
 
-import { removeAllBox } from 'TkbbFolder/dom/html.js';
 import * as d3 from "d3";
 import { easeCircle } from 'd3';
 // import { DomElement } from 'TkbbFolder/dom/html.js';
@@ -142,7 +145,6 @@ function compare(a, b) {
   // Use toUpperCase() to ignore character casing
   // const bandA = a.band.toUpperCase();
   // const bandB = b.band.toUpperCase();
-
   let comparison = 0;
   if (a.source > b.source) {
     comparison = 1;
@@ -769,18 +771,12 @@ function runMatrix(matrixdata, target) {
 }
 
 
-function homeMatrix(targetGroup, target) {
-  // console.log("DisplayTarget", target)
-  // var sources = matrixdata.source
-  // var targets = matrixdata.target
-
-  // console.log("Targets", targets)
-
-  // var relationhash = matrixdata.rhash
-  // const matrix = [];
-  // var matrixState = "Selectable";
-
-
+function homeMatrix() {
+  
+  // removeAllBox()
+  const target = createTaskBox()
+  // var target = 'taskBox'
+  console.log("Target:",target)
   const screenwidth = "1300"
   const screenheight = "700"
   const textdistance = "10"
@@ -788,8 +784,8 @@ function homeMatrix(targetGroup, target) {
   const rectwidth = 15            // Matrixelementgröße
   const homewidth = 10 * rectwidth            // Matrixhome
 
-  const baseX = 500;
-  const baseY = 200;
+  const baseX = 50;
+  const baseY = 50;
 
   const svgid = "svg1"
 
@@ -1132,3 +1128,4 @@ function homeMatrix(targetGroup, target) {
 
 
 export { RunFirewall };
+export { homeMatrix };

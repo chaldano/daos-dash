@@ -29,12 +29,12 @@ body {
   background-color: green;
 }
 
-#leftid, #rightid{
+#leftid, #rightid, #middleid {
   height: 100%;
-  background-color: gainsboro;
+  background-color: gray;
 }
 
-#displayRow, #displayRow .row{
+#displayRow, #displayRow 
   height: 60%;
 }
 
@@ -44,15 +44,18 @@ body {
     /* height: 30%; */
   /* } */
   
+  .boxTask,
   .boxContent,
   .boxDetail {
     border: solid 0.5px;
-    border-color: white;
+    /* border-color: white; */
+    background-color: black;
+
     height: 100%;
     width:100%;
   }
   
-  .leftframe, .right, .display {
+  .leftframe, .right, .middle, .display {
     border-color: red;
     border-style: solid;
     border-width: 0.25px;

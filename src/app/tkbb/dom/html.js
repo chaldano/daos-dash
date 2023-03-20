@@ -62,62 +62,77 @@ function removeDomElement(targetID) {
 
 // Display Funktionen
 
+
+function removeAllBox() {
+    removeDisplayBox()
+    removeContentBox()
+    removeDetailBox()
+    removeTaskBox()
+}
+
 function createDisplayBox() {
     const boxID = 'displayBox'
     removeBox(boxID)
     const DisplayBox = new DomElement({ targetid: 'displayRow', ownid: boxID, type: 'div' })
-      DisplayBox.addClass('col')
-      DisplayBox.addClass('bg-info')
-      DisplayBox.addClass('text-white')  
-      DisplayBox.addClass('monitor')
+    DisplayBox.addClass('col')
+    DisplayBox.addClass('bg-info')
+    DisplayBox.addClass('text-white')
+    DisplayBox.addClass('monitor')
     return boxID
-    }
-function removeAllBox(){
-    removeDisplayBox()
-    removeContentBox()
-    removeDetailBox
 }
 
 function removeDisplayBox() {
     const boxID = 'displayBox'
     removeBox(boxID)
-    }
+}
+
+
+function createTaskBox() {
+    const boxID = 'taskBox'
+    removeBox(boxID)
+    const TaskBox = new DomElement({ targetid: 'leftid', ownid: boxID, type: 'div' })
+    TaskBox.addClass('boxTask')
+    return boxID
+}
+function removeTaskBox() {
+    const boxID = 'taskBox'
+    removeBox(boxID)
+}
+
 
 function createContentBox() {
     const boxID = 'contentBox'
     removeBox(boxID)
-    const ContentBox = new DomElement({ targetid: 'leftid', ownid: boxID, type: 'div' })
-      ContentBox.addClass('boxContent')      
+    const ContentBox = new DomElement({ targetid: 'middleid', ownid: boxID, type: 'div' })
+    ContentBox.addClass('boxContent')
     return boxID
-    }
+}
 function removeContentBox() {
     const boxID = 'contentBox'
     removeBox(boxID)
-    }
+}
 
 function createDetailBox() {
     const boxID = 'detailBox'
     removeBox(boxID)
     const FormBox = new DomElement({ targetid: 'rightid', ownid: boxID, type: 'div' })
-      FormBox.addClass('boxDetail')
+    FormBox.addClass('boxDetail')
     return boxID
-    }
+}
 
 function removeDetailBox() {
     const boxID = 'detailBox'
     removeBox(boxID)
-    }
-
-
-  // Funktion zur Löschung einer Display-Box
-function removeBox(boxID) {
-  let existBox = !!document.getElementById(boxID);
-    if (existBox) {
-      removeDomElement(boxID)
-    }
 }
 
 
+// Funktion zur Löschung einer Display-Box
+function removeBox(boxID) {
+    let existBox = !!document.getElementById(boxID);
+    if (existBox) {
+        removeDomElement(boxID)
+    }
+}
 
 function registerFormFunction(formId, submitFunction) {
     // console.log("id:=" + navid);
@@ -136,20 +151,20 @@ function listRecordSelection(tHeader, tValue) {
 
 function listRecordSelectionHTML(tid, tHeader, tValue) {
 
-    
+
     const Record = new DomElement({ targetid: tid, ownid: 'recordid', type: 'div' })
-      
+
     tHeader.forEach((element, index) => {
         console.log("(" + index + ") " + element + ": " + tValue[index])
-        
-        const Label = new DomElement({ targetid: 'recordid', ownid: 'label'+index, type: 'label' })
-          Label.addContent(element)
-        
-          const Output = new DomElement({ targetid: 'recordid', ownid: 'output'+index, type: 'output' })
-          Output.addAttribute('for','label'+index)
-          Output.addContent(tValue[index])
+
+        const Label = new DomElement({ targetid: 'recordid', ownid: 'label' + index, type: 'label' })
+        Label.addContent(element)
+
+        const Output = new DomElement({ targetid: 'recordid', ownid: 'output' + index, type: 'output' })
+        Output.addAttribute('for', 'label' + index)
+        Output.addContent(tValue[index])
     })
-    
+
 }
 
 
@@ -163,8 +178,10 @@ export { removeDomElement };
 export { createDisplayBox };
 export { createContentBox };
 export { createDetailBox };
+export { createTaskBox };
 export { removeDisplayBox };
 export { removeContentBox };
 export { removeDetailBox };
+export { removeTaskBox };
 
 export { removeAllBox };

@@ -3,7 +3,7 @@ import 'bootstrap/js/dist/util';
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logMessage from 'JsFolder/logger'
-import { createHTML } from 'TkbbFolder/homepage.js'
+import { createPage } from 'TkbbFolder/homepage.js'
 // import * as d3 from "d3";
 
 // CSS-Moduel einbinden
@@ -21,4 +21,4 @@ logMessage('Web-GUI has been created')
 // if(typeof(module.hot) !== 'undefined') {
 //     module.hot.accept() // eslint-disable-line no-undef  
 //   }
-createHTML();
+createPage();
