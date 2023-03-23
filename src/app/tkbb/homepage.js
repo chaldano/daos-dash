@@ -9,8 +9,8 @@ import { registerButtonFunction } from 'TkbbFolder/dom/html.js';
 
 import { RunMatrix } from 'TkbbFolder/eventbuttons/box1/button-matrix.js';
 import { RunCCMatrix } from 'TkbbFolder/eventbuttons/box1/button-ccmatrix.js';
-import { RunFirewall } from 'TkbbFolder/eventbuttons/b-firewall.js';
-import { homeMatrix } from 'TkbbFolder/eventbuttons/b-firewall.js';
+import { RunFirewall } from 'TkbbFolder/fw/fw_upper.js';
+import { homeMatrix } from 'TkbbFolder/fw/fw_left.js';
 import { ShowAdrRelation } from 'TkbbFolder/eventbuttons/b-d3fwAddresses.js';
 // import { RunAlert2 } from 'TkbbFolder/boxbuttons/box1/testalerts.js';
 import { RunTable } from 'TkbbFolder/eventbuttons/box1/button-table.js';
@@ -366,10 +366,29 @@ function createPage() {
   // Display Area  
   const DisplayPage = new DomElement({ targetid: 'mainContainer', ownid: 'displayRow', type: 'div' })
   DisplayPage.addClass('row')
+  // DisplayPage.addClass('ms-0')
+  // DisplayPage.addClass('me-0')
+  
+  const Upper = new DomElement({ targetid: 'displayRow', ownid: 'upperid', type: 'div' })
+  Upper.addClass('d-flex')
+  Upper.addClass('leftframe')
+  Upper.addClass('flex-column')
+  Upper.addClass('justify-content-center')
+  // DisplayPage.addClass('my-0')
 
+
+  Upper.addClass('col-12')
+  // Upper.addClass('bg-info')
+  Upper.addClass('text-white')
+  Upper.addClass('p-2')
+  
   // Content Area
   const RoomPage = new DomElement({ targetid: 'mainContainer', ownid: 'roomRow', type: 'div' })
   RoomPage.addClass('row')
+  
+  // RoomPage.addClass('ms-0')
+  // RoomPage.addClass('me-0')
+  
   // RoomPage.addClass('align-items-center')
 
   // ADD LEFT Display-Windows
@@ -380,25 +399,32 @@ function createPage() {
   Left.addClass('justify-content-center')
 
   Left.addClass('col-4')
-  Left.addClass('bg-info')
+  // Left.addClass('bg-info')
   Left.addClass('text-white')
-
+  Left.addClass('p-1')
+  // Left.addClass('pe-1')
+  // Left.addClass('px-1')
+  // Left.addClass('py-1')
+ 
+  
   const Middle = new DomElement({ targetid: 'roomRow', ownid: 'middleid', type: 'div' })
   Middle.addClass('middle')
   Middle.addClass('col-4')
-  Middle.addClass('bg-info')
+  // Middle.addClass('bg-info')
   Middle.addClass('text-white')
-
+  Middle.addClass('p-1')
+  
   // ADD RIGHT Windows
   const Right = new DomElement({ targetid: 'roomRow', ownid: 'rightid', type: 'div' })
   Right.addClass('right')
   Right.addClass('col-4')
-  Right.addClass('bg-info')
+  // Right.addClass('bg-info')
   Right.addClass('text-white')
   // Right.addContent('Right')
 
   //TaskBox in Left verlinken
-
+  Right.addClass('p-1')
+  
   const TaskBox = new DomElement({ targetid: 'leftid', ownid: 'taskBox', type: 'div' })
   TaskBox.addClass('boxTask')
 
@@ -409,19 +435,17 @@ function createPage() {
   //DetailBox in Right verlinken
   const DetailBox = new DomElement({ targetid: 'rightid', ownid: 'detailBox', type: 'div' })
   DetailBox.addClass('boxDetail')
+  
+  const DisplayBox = new DomElement({ targetid: 'upperid', ownid: 'displayBox', type: 'div' })
+  DisplayBox.addClass('boxDisplay')
 
 
   // createForm1('rightid');
   // registerForm()
 
-  // homeMatrix()
+  homeMatrix()
 
 }
-
-// Feature CC-Matrix
-// $('button#ButtonHome').on("click",() => {
-//   homeMatrix()
-// })
 
 // Feature Firewall Data
 $('button#ButtonFw').on("click", () => {

@@ -777,15 +777,17 @@ function homeMatrix() {
   const target = createTaskBox()
   // var target = 'taskBox'
   console.log("Target:",target)
-  const screenwidth = "1300"
-  const screenheight = "700"
+  const screenwidth = "350"
+  const screenheight = "300"
   const textdistance = "10"
 
-  const rectwidth = 15            // Matrixelementgröße
-  const homewidth = 10 * rectwidth            // Matrixhome
+  const rectwidth = 15              // Matrixelementgröße
+  const matrixwidth = 12 * rectwidth  // Matrixhome
 
-  const baseX = 50;
-  const baseY = 50;
+  const baseX = screenwidth/2-matrixwidth/2;
+  // const baseX = 0;
+  // const baseY = 0;
+  const baseY = screenheight/2-matrixwidth/2;
 
   const svgid = "svg1"
 
@@ -794,22 +796,12 @@ function homeMatrix() {
   const matrixY1 = baseY
   const matrixid1 = "matrix1"
 
-  const matrixX2 = matrixX1 + 2 * homewidth
-  const matrixY2 = baseY
-  const matrixid2 = "matrix2"
-
-
   // Beschriftungsbereich und Parameter der Matrix
   const matrixhead = 3 * rectwidth
 
   const matrixT1id = "matrixT1"
-  const matrixT1x = matrixX1 - matrixhead
+  const matrixT1x = matrixX1 + matrixwidth/2
   const matrixT1y = matrixY1 - matrixhead
-
-  const matrixT2id = "matrixT2"
-  const matrixT2x = matrixX2 + homewidth + matrixhead
-  const matrixT2y = matrixY2 - matrixhead
-
 
 
   const strokewidthMax = "4px"
@@ -868,25 +860,20 @@ function homeMatrix() {
 
     .append("rect")
     .attr("class", "grid")
-    .attr("width", homewidth)
-    .attr("height", homewidth)
+    .attr("width", matrixwidth)
+    .attr("height", matrixwidth)
     .attr("x", 0)
     .attr("y", 0)
 
 
   // M1 Axen-Beschriftung
+  // Linie
   var canvas = d3.select("#" + svgid)
   canvas
     .append("g")
     .attr("transform", "translate(" + matrixT1x + "," + matrixT1y + ")")
     .attr("id", matrixT1id)
-    .append("line")
-    .attr("class", "matrixT")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", matrixhead)
-    .attr("y2", matrixhead)
-
+  
   // M1-Service Überschrift
   var matrixT = d3.select("#" + matrixT1id)
   matrixT
@@ -896,17 +883,18 @@ function homeMatrix() {
     .attr("y", rectwidth / 2)
     .attr("class", "matrixT")
     // .text("Services of Zone: " + targetzone)
-    .text("Services of Zone: ")
+    .text("Target Zone ")
     .style("text-anchor", "start")
 
   // M1-Source Überschrift
+  var sourcename = "Source Zone"
   matrixT
     .append("text")
     // .classed("skala", true)
-    .attr("x", -rectwidth / 2)
+    .attr("x", -sourcename.length-rectwidth / 2)
     .attr("y", rectwidth / 2)
     .attr("class", "matrixT")
-    .text("Sources To")
+    .text(sourcename)
     .style("text-anchor", "end")
 
   // M1 Fw
@@ -914,85 +902,10 @@ function homeMatrix() {
   matrix1
     .append("line")
     .attr("class", "fwline")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", homewidth)
-    .attr("y2", homewidth)
-
-  // Matrix2
-
-  var canvas = d3.select("#" + svgid)
-  canvas
-    .append("g")
-    .attr("transform", "translate(" + matrixX2 + "," + matrixY2 + ")")
-    .attr("id", matrixid2)
-
-    .append("rect")
-    .attr("class", "grid")
-    .attr("width", homewidth)
-    .attr("height", homewidth)
-    .attr("x", 0)
-    .attr("y", 0)
-
-  var canvas = d3.select("#" + svgid)
-  canvas
-    .append("g")
-    .attr("transform", "translate(" + matrixT2x + "," + matrixT2y + ")")
-    .attr("id", matrixT2id)
-    .append("line")
-    .attr("class", "matrixT")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", -matrixhead)
-    .attr("y2", matrixhead)
-
-  // M2-Service Überschrift
-  var matrixT2 = d3.select("#" + matrixT2id)
-  matrixT2
-    .append("text")
-    // .classed("skala", true)
-    .attr("x", rectwidth / 2)
-    .attr("y", rectwidth / 2)
-    .attr("class", "matrixT")
-    // .text("Services of Zone: " + targetzone)
-    .text("Sources of Zone: ")
-    .style("text-anchor", "start")
-
-  // M2-Source Überschrift
-  matrixT2
-    .append("text")
-    // .classed("skala", true)
-    .attr("x", -rectwidth)
-    .attr("y", rectwidth / 2)
-    .attr("class", "matrixT")
-    .text("Services")
-    .style("text-anchor", "end")
-
-  // M2 Fw
-  var matrix2 = d3.select("#" + matrixid2)
-  matrix2
-    .append("line")
-    .attr("class", "fwline")
-    .attr("x1", 0)
-    .attr("y1", homewidth)
-    .attr("x2", homewidth)
-    .attr("y2", 0)
-
-
-
-
-
-  // tButton-Bereich  
-  // canvas
-  //   .append("g")
-  //   .attr("transform", "translate(" + tButtonX + "," + tButtonY + ")")
-  //   .attr("id", tButtonid)
-
-  // // tButton-Textbereich
-  //   canvas
-  //   .append("g")
-  //   .attr("transform", "translate(" + tButtonTx + "," + tButtonTy + ")")
-  //   .attr("id", tButtonTid)
+    .attr("x1", matrixwidth/2)
+    .attr("y1", 0-matrixhead)
+    .attr("x2", matrixwidth/2)
+    .attr("y2", matrixwidth+matrixhead)
 
   // Source-Text-Bereich
   canvas
@@ -1000,88 +913,6 @@ function homeMatrix() {
     .attr("transform", "translate(" + sourceTx + "," + sourceTy + ")")
     .attr("id", sourceTid)
 
-  // Service-Text-Bereich
-  // canvas
-  // .append("g")
-  // .attr("transform", "translate(" + targetTx + "," + targetTy + ")")
-  // .attr("id", targetTid)
-
-  // Matrix-T-Bereich
-  // canvas = d3.select("#" + matrixTid)
-  // var serviceSkala = (targets.length * rectwidth + matrixhead) - targetGroup.length * rectwidth
-
-
-
-
-  // Target Button-Leiste
-  // var tButton = d3.select("#" + tButtonid)
-  // tButton
-  //   .selectAll("circle.cout")
-  //   .data(targetGroup)
-  //   .enter()
-  //   .append('circle')
-  //   .classed("cout", true)
-  //   .classed("targetcircle", true)
-  //   .attr("cx", (d, i) => { return rectwidth + i * rectwidth + rectwidth / 2 })
-  //   .attr("cy", 0.5)
-  //   .attr("id", (d, i) => { return "cb" + i })
-  //   .attr("r", rectwidth / 2)
-
-  //   .on('click', tButtonClick)
-  //   .on('mouseover', tButtonOver)
-  //   .on('mouseout', tButtonOut)
-
-
-  // Hier wird der Source-Text angezeigt
-  // var sourceT = d3.select("#" + sourceTid)
-  // sourceT
-  //   // .append("g")
-  //   // .attr("transform", "translate(" + (baseX - textdistance + offsetX) + "," + (baseY + offsetY) + ")")
-  //   .selectAll("text")
-  //   .data(sources)
-  //   .enter()
-  //   .append("text")
-  //   .attr("class", "skala")
-  //   .attr("y", (d, i) => i * rectwidth + rectwidth / 2)
-  //   .text(d => d.source)
-  //   .style("text-anchor", "end");
-
-  // box.selectAll("rect.grid").on("mouseover", gridOver);
-  // box.selectAll("rect.grid").on("mouseout", gridOut);
-  // box.selectAll("rect.grid").on("click", gridState);
-
-  // function gridOver(event, d) {
-  //   console.log("State:", matrixState)
-  //   if (matrixState == "Selectable") {
-  //     // console.log("Durch..")
-  //     box.selectAll("rect.grid").attr("class", p => {
-  //       if (p.x == d.x || p.y == d.y) {
-  //         return "gridovered"
-  //       }
-  //       else {
-  //         return "grid"
-  //       }
-  //     })
-  //     // 
-  //     const serviceObject = targets[d.x]
-  //     // Service Text
-  //     const zeile = d3.select("#"+ targetTid)
-  //     zeile.append("text")
-  //       .classed("current", true)
-  //       .classed("skala", true)
-  //       .attr("x", d.x * rectwidth + rectwidth / 2)
-  //       .text(serviceObject["service.app"])
-  //       .style("text-anchor", "middle")
-  //       .style("visibility", "visible")
-  //   }
-  // };
-
-  // function gridOut(event, d) {
-  //   if (matrixState == "Selectable") {
-  //     box.select("text.current").remove()
-  //     box.selectAll("rect.gridovered").attr("class", p => { return "grid" });
-  //   }
-  // }
 
   function tButtonClick(e, d, i) {
     // alert("A circle was clicked and it's value is " + d.id);
@@ -1109,20 +940,6 @@ function homeMatrix() {
 
     // alert("A circle was clicked and it's value is " + d.id);
   }
-
-  // States: "Selected" (einfrieren; "Selectable" (mouseover))
-  // function gridState(event, d) {
-  //   if (matrixState == "Selected") {
-  //     console.log("Durch1")
-  //     matrixState = "Selectable"
-  //     box.selectAll("rect.gridselected").attr("class", p => { return "gridovered" })
-  //   }
-  //   else {
-  //     console.log("Durch2")
-  //     matrixState = "Selected"
-  //     box.selectAll("rect.gridovered").attr("class", p => { return "gridselected" })
-  //   }
-  // }
 
 }
 

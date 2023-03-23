@@ -22,48 +22,74 @@ body {
 
 #mainContainer {
   height: 95%;
-  background-color: black;
+  background-color: blue;
 }
 #roomRow, #roomRow .row{
   height: 40%;
   background-color: green;
 }
 
+#displayRow {
+  height: 60%;
+  /* width: 50%; */
+  
+}
+/* Spalten einer Zeile*/
 #leftid, #rightid, #middleid {
   height: 100%;
+  /* width: 95%; */
   background-color: gray;
-}
-
-#displayRow, #displayRow 
-  height: 60%;
-}
-
-  /* .flexContent { */
-    /* border: solid 0.5px; */
-    /* border-color: red; */
-    /* height: 30%; */
-  /* } */
+  border-color:#2669bf;
+    
+  /* padding: 5px; */
   
+}
+#upperid {
+  height: 100%;
+  /* width: 100%; */
+  background-color:gray;
+  border-color:#2669bf;
+  
+  /* padding: 5px; */
+  /* padding-right: 0px; */
+}
+
+/* Boxen innerhalb einer Spalte */
   .boxTask,
   .boxContent,
   .boxDetail {
-    border: solid 0.5px;
-    /* border-color: white; */
+    /* border: solid 0.5px; */
+    /* border-color:#2669bf; */
     background-color: black;
-
     height: 100%;
     width:100%;
   }
   
+  .boxDisplay {
+    border: solid 0.5px;
+    /* border-color: white; */
+    background-color: black;
+    height: 100%;
+    width:100%;
+  }
+  
+
   .leftframe, .right, .middle, .display {
-    border-color: red;
+    /* border-color: white; */
     border-style: solid;
     border-width: 0.25px;
     
   }
 
+#svg1 {
+  padding: 0;
+    margin: auto;
+    display: block;
+    width: 350px;
+}
 .navbar {
-    background:#6ab446;
+    /* background:#6ab446; */
+    background:#2669bf;
 }
 .nav-link,
 .navbar-brand {
