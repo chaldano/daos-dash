@@ -370,13 +370,12 @@ function createPage() {
   // DisplayPage.addClass('me-0')
   
   const Upper = new DomElement({ targetid: 'displayRow', ownid: 'upperid', type: 'div' })
-  Upper.addClass('d-flex')
-  Upper.addClass('leftframe')
-  Upper.addClass('flex-column')
-  Upper.addClass('justify-content-center')
+  
+  // Upper.addClass('d-flex')
+  // Upper.addClass('leftframe')
+  // Upper.addClass('flex-column')
+  // Upper.addClass('justify-content-center')
   // DisplayPage.addClass('my-0')
-
-
   Upper.addClass('col-12')
   // Upper.addClass('bg-info')
   Upper.addClass('text-white')
@@ -393,10 +392,10 @@ function createPage() {
 
   // ADD LEFT Display-Windows
   const Left = new DomElement({ targetid: 'roomRow', ownid: 'leftid', type: 'div' })
-  Left.addClass('d-flex')
-  Left.addClass('leftframe')
-  Left.addClass('flex-column')
-  Left.addClass('justify-content-center')
+  // Left.addClass('d-flex')
+  // Left.addClass('leftframe')
+  // Left.addClass('flex-column')
+  // Left.addClass('justify-content-center')
 
   Left.addClass('col-4')
   // Left.addClass('bg-info')
@@ -408,7 +407,7 @@ function createPage() {
  
   
   const Middle = new DomElement({ targetid: 'roomRow', ownid: 'middleid', type: 'div' })
-  Middle.addClass('middle')
+  // Middle.addClass('middle')
   Middle.addClass('col-4')
   // Middle.addClass('bg-info')
   Middle.addClass('text-white')
@@ -416,7 +415,7 @@ function createPage() {
   
   // ADD RIGHT Windows
   const Right = new DomElement({ targetid: 'roomRow', ownid: 'rightid', type: 'div' })
-  Right.addClass('right')
+  // Right.addClass('right')
   Right.addClass('col-4')
   // Right.addClass('bg-info')
   Right.addClass('text-white')
@@ -425,19 +424,19 @@ function createPage() {
   //TaskBox in Left verlinken
   Right.addClass('p-1')
   
-  const TaskBox = new DomElement({ targetid: 'leftid', ownid: 'taskBox', type: 'div' })
-  TaskBox.addClass('boxTask')
+  const TaskBox = new DomElement({ targetid: 'leftid', ownid: 'taskBoxID', type: 'div' })
+  TaskBox.addClass('taskBox')
 
   //ContentBox in Middle verlinken
-  const ContentBox = new DomElement({ targetid: 'middleid', ownid: 'contentBox', type: 'div' })
-  ContentBox.addClass('boxContent')
+  const ContentBox = new DomElement({ targetid: 'middleid', ownid: 'contentBoxID', type: 'div' })
+  ContentBox.addClass('contentBox')
 
   //DetailBox in Right verlinken
-  const DetailBox = new DomElement({ targetid: 'rightid', ownid: 'detailBox', type: 'div' })
-  DetailBox.addClass('boxDetail')
+  const DetailBox = new DomElement({ targetid: 'rightid', ownid: 'detailBoxID', type: 'div' })
+  DetailBox.addClass('detailBox')
   
-  const DisplayBox = new DomElement({ targetid: 'upperid', ownid: 'displayBox', type: 'div' })
-  DisplayBox.addClass('boxDisplay')
+  const DisplayBox = new DomElement({ targetid: 'upperid', ownid: 'displayBoxID', type: 'div' })
+  DisplayBox.addClass('displayBox')
 
 
   // createForm1('rightid');

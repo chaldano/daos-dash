@@ -12,6 +12,7 @@ import { createPage } from 'TkbbFolder/homepage.js'
 import 'CssFolder/table.css'
 import 'CssFolder/matrix.css'
 import 'CssFolder/main.css'
+import 'CssFolder/left.css'
 // import 'CssFolder/flexTable.scss'
 
 // Log message to console

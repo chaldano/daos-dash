@@ -71,27 +71,30 @@ function removeAllBox() {
 }
 
 function createDisplayBox() {
-    const boxID = 'displayBox'
+    const boxID = 'displayBoxID'
     removeBox(boxID)
-    const DisplayBox = new DomElement({ targetid: 'displayRow', ownid: boxID, type: 'div' })
-    DisplayBox.addClass('col')
-    DisplayBox.addClass('bg-info')
-    DisplayBox.addClass('text-white')
-    DisplayBox.addClass('monitor')
+    const DisplayBox = new DomElement({ targetid: 'upperid', ownid: boxID, type: 'div' })
+    // DisplayBox.addClass('col')
+    // DisplayBox.addClass('bg-info')
+    // DisplayBox.addClass('text-white')
+    DisplayBox.addClass('displayBox')
     return boxID
 }
 
 function removeDisplayBox() {
-    const boxID = 'displayBox'
+    const boxID = 'displayBoxID'
     removeBox(boxID)
 }
 
 
 function createTaskBox() {
-    const boxID = 'taskBox'
+    const boxID = 'taskBoxID'
     removeBox(boxID)
     const TaskBox = new DomElement({ targetid: 'leftid', ownid: boxID, type: 'div' })
-    TaskBox.addClass('boxTask')
+    TaskBox.addClass('taskBox')
+    TaskBox.addClass('position-relative')
+    TaskBox.addClass('d-flex')
+    TaskBox.addClass('justify-content-center')
     return boxID
 }
 function removeTaskBox() {
@@ -101,27 +104,27 @@ function removeTaskBox() {
 
 
 function createContentBox() {
-    const boxID = 'contentBox'
+    const boxID = 'contentBoxID'
     removeBox(boxID)
     const ContentBox = new DomElement({ targetid: 'middleid', ownid: boxID, type: 'div' })
-    ContentBox.addClass('boxContent')
+    ContentBox.addClass('contentBox')
     return boxID
 }
 function removeContentBox() {
-    const boxID = 'contentBox'
+    const boxID = 'contentBoxID'
     removeBox(boxID)
 }
 
 function createDetailBox() {
-    const boxID = 'detailBox'
+    const boxID = 'detailBoxID'
     removeBox(boxID)
     const FormBox = new DomElement({ targetid: 'rightid', ownid: boxID, type: 'div' })
-    FormBox.addClass('boxDetail')
+    FormBox.addClass('detailBox')
     return boxID
 }
 
 function removeDetailBox() {
-    const boxID = 'detailBox'
+    const boxID = 'detailBoxID'
     removeBox(boxID)
 }
 

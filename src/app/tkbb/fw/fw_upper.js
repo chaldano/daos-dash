@@ -8,6 +8,7 @@ import { createTaskBox } from 'TkbbFolder/dom/html.js';
 
 import { removeTaskBox } from 'TkbbFolder/dom/html.js';
 import { removeAllBox } from 'TkbbFolder/dom/html.js';
+import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
 
 import { createTable } from 'TkbbFolder/tables/tabbasic.js';
 import { putTableHeader } from 'TkbbFolder/tables/tabbasic.js';
@@ -22,7 +23,7 @@ import { easeCircle } from 'd3';
 
 
 function RunFirewall() {
-  removeAllBox()
+  removeDisplayBox()
   var rules
   requestData('GET', 'http://localhost:8080/fwservice')
     .then(csvdata => {
@@ -508,10 +509,10 @@ function runMatrix(matrixdata, target) {
 
   const baseX = 200;
   const offsetX = 0;
-  const baseY = 75;
+  const baseY = 50;
   const offsetY = 0;
 
-  const svgid = "svg1"
+  const svgid = "svgupper"
 
   // Matrixbereich
   const matrixX = baseX
@@ -519,8 +520,8 @@ function runMatrix(matrixdata, target) {
   const rectwidth = 15            // Matrixelementgröße
 
   // Beschriftungsbereich und Parameter der Matrix
-  const matrixTid = "matrixT"
-  const matrixhead = 3 * rectwidth
+  const matrixTid = "matrixTL"
+  const matrixhead = 2 * rectwidth
   const matrixid = "matrix"
   const matrixTx = matrixX - matrixhead
   const matrixTy = matrixY - matrixhead
@@ -602,8 +603,8 @@ function runMatrix(matrixdata, target) {
     .attr("class", matrixTid)
     .attr("x1", 0)
     .attr("y1", 0)
-    .attr("x2", 3 * rectwidth)
-    .attr("y2", 3 * rectwidth)
+    .attr("x2", matrixhead)
+    .attr("y2", matrixhead)
 
   // tButton-Bereich  
   canvas
@@ -638,20 +639,19 @@ function runMatrix(matrixdata, target) {
   var matrixT = d3.select("#" + matrixTid)
   matrixT
     .append("text")
-    // .classed("skala", true)
+    .classed("matrixT", true)
     .attr("x", rectwidth)
     .attr("y", rectwidth / 2)
-    .attr("class", "matrixT")
+    // .style("color", "bs-white")
     .text("Services of Zone: " + targetzone)
-    .style("text-anchor", "start")
+    // .style("text-anchor", "start")
 
   // Source Überschrift
   matrixT
     .append("text")
-    // .classed("skala", true)
+    .attr("class", "matrixT")
     .attr("x", -rectwidth / 2)
     .attr("y", rectwidth / 2)
-    .attr("class", "matrixT")
     .text("Sources To")
     .style("text-anchor", "end")
 

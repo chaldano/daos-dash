@@ -7,11 +7,13 @@ import * as d3 from "d3";
 
 
 function homeMatrix() {
-  
+  var allGroup1 = ["yellow", "blue", "red", "green", "purple", "black"]
+  var allGroup2 = ["A", "B", "C", "D", "E", "F"]
+
   // removeAllBox()
   const target = createTaskBox()
   // var target = 'taskBox'
-  console.log("Target:",target)
+  console.log("Target:", target)
   const screenwidth = "350"
   const screenheight = "300"
   const textdistance = "10"
@@ -19,12 +21,12 @@ function homeMatrix() {
   const rectwidth = 15              // Matrixelementgröße
   const matrixwidth = 12 * rectwidth  // Matrixhome
 
-  const baseX = screenwidth/2-matrixwidth/2;
-  // const baseX = 0;
+  const baseX = screenwidth / 2 - matrixwidth / 2;
+  // const baseX = 200;
   // const baseY = 0;
-  const baseY = screenheight/2-matrixwidth/2;
+  const baseY = screenheight / 2 - matrixwidth / 2;
 
-  const svgid = "svg1"
+  const svgid = "svgleft"
 
   // Matrixbereich
   const matrixX1 = baseX
@@ -34,8 +36,11 @@ function homeMatrix() {
   // Beschriftungsbereich und Parameter der Matrix
   const matrixhead = 3 * rectwidth
 
+  const selectSource = "selectSZone"
+  const selectTarget = "selectTZone"
+
   const matrixT1id = "matrixT1"
-  const matrixT1x = matrixX1 + matrixwidth/2
+  const matrixT1x = matrixX1 + matrixwidth / 2
   const matrixT1y = matrixY1 - matrixhead
 
 
@@ -71,11 +76,37 @@ function homeMatrix() {
   const sourceTy = matrixY1
 
 
+  // Auswahl 1 setzen
+  var b1 = d3.select("#" + target)
+  b1
+    .append("select")
+    .attr("id", selectSource)
+    .classed("position-absolute", true)
+    .classed("bottom-50", true)
+    .classed("end-50", true)
+    .classed("me-2", true)
+    .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+    .data(allGroup1)
+    .enter()
+    .append('option')
+    .text(function (d) { return d; }) // text showed in the menu
+    .attr("value", function (d) { return d; }) // corresponding value returned by the button
 
-  // Source-Text-Beschriftung
-  // // Target-Text-Beschriftung
-
-
+  // Auswahl 2 setzen
+  var b2 = d3.select("#" + target)
+  b2
+    .append("select")
+    .classed("position-absolute", true)
+    .classed("bottom-50", true)
+    .classed("start-50", true)
+    .classed("ms-2", true)
+    .attr("id", selectTarget)
+    .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+    .data(allGroup2)
+    .enter()
+    .append('option')
+    .text(function (d) { return d; }) // text showed in the menu
+    .attr("value", function (d) { return d; }) // corresponding value returned by the butto
 
 
   // Setze SVG-Box
@@ -85,6 +116,8 @@ function homeMatrix() {
     .attr("width", screenwidth)
     .attr("height", screenheight)
     .attr("id", svgid)
+  // .classed("position-absolute", true)
+  // .classed("top-0", true)
 
   // Setze Matrix-Bereiche  
   var canvas = d3.select("#" + svgid)
@@ -94,11 +127,14 @@ function homeMatrix() {
     .attr("id", matrixid1)
 
     .append("rect")
-    .attr("class", "grid")
+    .attr("class", "fwgrid")
     .attr("width", matrixwidth)
     .attr("height", matrixwidth)
     .attr("x", 0)
     .attr("y", 0)
+
+  // Auswahl Button einhängen
+
 
 
   // M1 Axen-Beschriftung
@@ -108,12 +144,12 @@ function homeMatrix() {
     .append("g")
     .attr("transform", "translate(" + matrixT1x + "," + matrixT1y + ")")
     .attr("id", matrixT1id)
-  
+
   // M1-Service Überschrift
   var matrixT = d3.select("#" + matrixT1id)
   matrixT
     .append("text")
-    // .classed("skala", true)
+    .classed("skala", true)
     .attr("x", rectwidth)
     .attr("y", rectwidth / 2)
     .attr("class", "matrixT")
@@ -126,7 +162,7 @@ function homeMatrix() {
   matrixT
     .append("text")
     // .classed("skala", true)
-    .attr("x", -sourcename.length-rectwidth / 2)
+    .attr("x", -sourcename.length - rectwidth / 2)
     .attr("y", rectwidth / 2)
     .attr("class", "matrixT")
     .text(sourcename)
@@ -137,10 +173,10 @@ function homeMatrix() {
   matrix1
     .append("line")
     .attr("class", "fwline")
-    .attr("x1", matrixwidth/2)
-    .attr("y1", 0-matrixhead)
-    .attr("x2", matrixwidth/2)
-    .attr("y2", matrixwidth+matrixhead)
+    .attr("x1", matrixwidth / 2)
+    .attr("y1", 0 - matrixhead)
+    .attr("x2", matrixwidth / 2)
+    .attr("y2", matrixwidth + matrixhead)
 
   // Source-Text-Bereich
   canvas

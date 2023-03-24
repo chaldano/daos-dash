@@ -1,18 +1,23 @@
 /* Matrixgrid */
-.grid {
-  stroke: #9A8B7A;
+.grid, .gridselected, .gridovered {
+  stroke: white;
   stroke-width: 1px;
-  fill: #CF7D1C;
+  fill: #2669bf;
+}
+.fwgrid {
+  stroke: white;
+  stroke-width: 1px;
+  fill: #cf7d1d;
 }
 .gridselected {
-  stroke: #9A8B7A;
-  stroke-width: 4px;
+  /* stroke: #9A8B7A; */
+  stroke-width: 3px;
   fill: green;
 }
 .gridovered {
-  stroke: #9A8B7A;
-  stroke-width: 4px;
-  fill: #CF7D1C;
+  /* stroke: #9A8B7A; */
+  stroke-width: 3px;
+  /* fill: #CF7D1C; */
 }
 
 .butt, .adrp {
@@ -87,18 +92,22 @@
 }
 
 .matrixT {
-  stroke: #9A8B7A;
-  stroke-width: 1px;
-  /* fill: blue; */
   font-family: 'Lora';
   font-weight: normal;
-  font-size: 10px;
+  font-size: 12px;
+  fill: white;
 }
+/* Linie  */
+.matrixTL {
+  stroke: white;
+  stroke-width: 0.5px;
+  }
 
 .skala {
   font-family: 'Lora';
   font-weight: normal;
   font-size: 8px;
+  fill:white;
 }
 
 
