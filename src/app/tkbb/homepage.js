@@ -3,18 +3,19 @@ import _, { isLength } from 'lodash';
 import { DomElement } from 'TkbbFolder/dom/html.js';
 import * as Daos from 'TkbbFolder/daos.js';
 
-import { registerButtonFunction } from 'TkbbFolder/dom/html.js';
+// import { registerButtonFunction } from 'TkbbFolder/dom/html.js';
 
 // import { registerFormFunction } from 'TkbbFolder/dom/html.js';
 
-import { RunMatrix } from 'TkbbFolder/eventbuttons/box1/button-matrix.js';
-import { RunCCMatrix } from 'TkbbFolder/eventbuttons/box1/button-ccmatrix.js';
-import { RunFirewall } from 'TkbbFolder/fw/fw_upper.js';
-import { homeMatrix } from 'TkbbFolder/fw/fw_left.js';
-import { ShowAdrRelation } from 'TkbbFolder/eventbuttons/b-d3fwAddresses.js';
+// import { RunMatrix } from 'TkbbFolder/eventbuttons/box1/button-matrix.js';
+// import { RunCCMatrix } from 'TkbbFolder/eventbuttons/box1/button-ccmatrix.js';
+import { runFirewall } from 'TkbbFolder/fw/fw_main.js';
+import { RunAnalyse } from 'TkbbFolder/fw/fw_right-analyse.js';
+
+// import { homeMatrix } from 'TkbbFolder/fw/fw_left.js';
+// import { ShowAdrRelation } from 'TkbbFolder/eventbuttons/b-d3fwAddresses.js';
 // import { RunAlert2 } from 'TkbbFolder/boxbuttons/box1/testalerts.js';
-import { RunTable } from 'TkbbFolder/eventbuttons/box1/button-table.js';
-import { RunAnalyse } from 'TkbbFolder/eventbuttons/box1/button-analyse.js';
+// import { RunTable } from 'TkbbFolder/eventbuttons/box1/button-table.js';
 // import { RunForm } from 'TkbbFolder/boxbuttons/box1/buttonsb1Submit.js';
 // import { FB1Button1 } from 'TkbbFolder/boxbuttons/box1/buttonsb1b1.js';
 // import { FB2Button1 } from 'TkbbFolder/boxbuttons/box2/buttonsb2b1.js';
@@ -323,20 +324,16 @@ function createNavBar(targetID) {
   ListItem1Drop.addClass('dropdown-menu')
   ListItem1Drop.addAttribute('aria-labelledby', 'itemlink1')
 
-
-  // new Feature
-  // new DomElement({ targetid: 'featurelist', ownid: 'home_itemid', type: 'li' })                 
-  // const DropItem4 = new DomElement({ targetid: 'home_itemid', ownid: 'ButtonHome', type: 'button' })
-  //   DropItem4.addClass('dropdown-item') 
-  //   DropItem4.addAttribute('type','button')
-  //   DropItem4.addContent('HomeMatrix')
-  // new Feature
   new DomElement({ targetid: 'featurelist', ownid: 'fw_itemid', type: 'li' })
   const DropItem5 = new DomElement({ targetid: 'fw_itemid', ownid: 'ButtonFw', type: 'button' })
   DropItem5.addClass('dropdown-item')
   DropItem5.addAttribute('type', 'button')
   DropItem5.addContent('Firewall')
-
+  
+  const DropItem6 = new DomElement({ targetid: 'fw_itemid', ownid: 'ButtonTest', type: 'button' })
+  DropItem6.addClass('dropdown-item')
+  DropItem6.addAttribute('type', 'button')
+  DropItem6.addContent('Function')
 
   const ListItem2 = new DomElement({ targetid: 'navlistid', ownid: 'item2id', type: 'li' })
   ListItem2.addClass('nav-item')
@@ -392,35 +389,20 @@ function createPage() {
 
   // ADD LEFT Display-Windows
   const Left = new DomElement({ targetid: 'roomRow', ownid: 'leftid', type: 'div' })
-  // Left.addClass('d-flex')
-  // Left.addClass('leftframe')
-  // Left.addClass('flex-column')
-  // Left.addClass('justify-content-center')
-
   Left.addClass('col-4')
-  // Left.addClass('bg-info')
   Left.addClass('text-white')
   Left.addClass('p-1')
-  // Left.addClass('pe-1')
-  // Left.addClass('px-1')
-  // Left.addClass('py-1')
- 
   
   const Middle = new DomElement({ targetid: 'roomRow', ownid: 'middleid', type: 'div' })
-  // Middle.addClass('middle')
   Middle.addClass('col-4')
-  // Middle.addClass('bg-info')
   Middle.addClass('text-white')
   Middle.addClass('p-1')
   
   // ADD RIGHT Windows
   const Right = new DomElement({ targetid: 'roomRow', ownid: 'rightid', type: 'div' })
-  // Right.addClass('right')
   Right.addClass('col-4')
-  // Right.addClass('bg-info')
   Right.addClass('text-white')
-  // Right.addContent('Right')
-
+  
   //TaskBox in Left verlinken
   Right.addClass('p-1')
   
@@ -442,14 +424,18 @@ function createPage() {
   // createForm1('rightid');
   // registerForm()
 
-  homeMatrix()
+  // homeMatrix()
 
 }
 
 // Feature Firewall Data
 $('button#ButtonFw').on("click", () => {
-  RunFirewall()
+  runFirewall()
 })
+$('button#ButtonTest').on("click", () => {
+  RunAnalyse()
+})
+
 // Feature Firewall Data
 $('button#d3Button').on("click", () => {
 
@@ -530,5 +516,6 @@ $('button#d3Button').on("click", () => {
 
   // console.log("raus")
 })
+
 
 export { createPage };

@@ -2,18 +2,17 @@ import { requestData } from 'TkbbFolder/net/client.js';
 
 // import 'TkbbFolder/dom/html.js';
 import { createTaskBox } from 'TkbbFolder/dom/html.js';
+import { DomElement } from 'TkbbFolder/dom/html.js';
+import { analyseRules } from 'TkbbFolder/fw/fw_main.js';
+
 import * as d3 from "d3";
 
+var selectedSource = ""
+var selectedTarget = ""
+var selectedZones = []
 
-
-function homeMatrix() {
-  var allGroup1 = ["yellow", "blue", "red", "green", "purple", "black"]
-  var allGroup2 = ["A", "B", "C", "D", "E", "F"]
-
-  // removeAllBox()
+function selectZones(rules, szones, dzones) {
   const target = createTaskBox()
-  // var target = 'taskBox'
-  console.log("Target:", target)
   const screenwidth = "350"
   const screenheight = "300"
   const textdistance = "10"
@@ -22,8 +21,6 @@ function homeMatrix() {
   const matrixwidth = 12 * rectwidth  // Matrixhome
 
   const baseX = screenwidth / 2 - matrixwidth / 2;
-  // const baseX = 200;
-  // const baseY = 0;
   const baseY = screenheight / 2 - matrixwidth / 2;
 
   const svgid = "svgleft"
@@ -38,6 +35,8 @@ function homeMatrix() {
 
   const selectSource = "selectSZone"
   const selectTarget = "selectTZone"
+  selectedSource = szones[0]
+  selectedTarget = dzones[0]
 
   const matrixT1id = "matrixT1"
   const matrixT1x = matrixX1 + matrixwidth / 2
@@ -46,25 +45,6 @@ function homeMatrix() {
 
   const strokewidthMax = "4px"
   const strokewidthMin = "1px"
-
-  // Konstante als Text- und Buttonbereiche (Source-Target)
-  // Target
-  // var targetzone = matrixdata.zone
-  // const tButtonid = "tButtonID"
-  // const tButtonX = matrixX+targets.length * rectwidth - (targetGroup.length+1) * rectwidth
-  // const tButtonY = matrixTy
-
-  // const tButtonTid = "tButtonTextID"
-  // // const tButtonTx = tButtonX+rectwidth/2
-  // const tButtonTx = tButtonX+rectwidth
-  // const tButtonTy = tButtonY - textdistance
-
-
-  // // var serviceSkala = (targets.length * rectwidth + matrixhead) - targetGroup.length * rectwidth
-  // const targetTid = "tTextID"
-  // const targetTx = matrixX
-  // const targetTy = matrixY - textdistance
-
 
   // Source
   const sButtonid = "sButtonID"
@@ -76,7 +56,7 @@ function homeMatrix() {
   const sourceTy = matrixY1
 
 
-  // Auswahl 1 setzen
+  // Button "Source" setzen
   var b1 = d3.select("#" + target)
   b1
     .append("select")
@@ -86,27 +66,42 @@ function homeMatrix() {
     .classed("end-50", true)
     .classed("me-2", true)
     .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
-    .data(allGroup1)
+    .data(szones)
     .enter()
     .append('option')
     .text(function (d) { return d; }) // text showed in the menu
     .attr("value", function (d) { return d; }) // corresponding value returned by the button
+  // .on('click', tSelectionClick)
 
-  // Auswahl 2 setzen
+  // Button "Target" setzen
   var b2 = d3.select("#" + target)
   b2
     .append("select")
+    .attr("id", selectTarget)
     .classed("position-absolute", true)
     .classed("bottom-50", true)
     .classed("start-50", true)
     .classed("ms-2", true)
-    .attr("id", selectTarget)
     .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
-    .data(allGroup2)
+    .data(dzones)
     .enter()
     .append('option')
     .text(function (d) { return d; }) // text showed in the menu
     .attr("value", function (d) { return d; }) // corresponding value returned by the butto
+  // .on('click', tSelectionClick)
+
+  // Button "Auswahl zur Analyse" setzen
+  const Banalyse = new DomElement({ targetid: target, ownid: 'BanalyseID', type: 'button' })
+  Banalyse.addClass('btn')
+  Banalyse.addClass('btn-primary')
+  Banalyse.addClass('btn-sm')
+  Banalyse.addAttribute('role', 'button')
+  // Banalyse.addAttribute('href', 'RunAnalyse')
+  Banalyse.addContent('Analyse')
+  Banalyse.addClass('position-absolute')
+  Banalyse.addClass('bottom-0')
+  Banalyse.addClass('end-0')
+  Banalyse.addClass('m-2')
 
 
   // Setze SVG-Box
@@ -116,8 +111,6 @@ function homeMatrix() {
     .attr("width", screenwidth)
     .attr("height", screenheight)
     .attr("id", svgid)
-  // .classed("position-absolute", true)
-  // .classed("top-0", true)
 
   // Setze Matrix-Bereiche  
   var canvas = d3.select("#" + svgid)
@@ -132,10 +125,6 @@ function homeMatrix() {
     .attr("height", matrixwidth)
     .attr("x", 0)
     .attr("y", 0)
-
-  // Auswahl Button einhängen
-
-
 
   // M1 Axen-Beschriftung
   // Linie
@@ -184,35 +173,22 @@ function homeMatrix() {
     .attr("transform", "translate(" + sourceTx + "," + sourceTy + ")")
     .attr("id", sourceTid)
 
+  $('#' + selectSource).change(function () {
+    selectedSource = $(this).val()
+  })
 
-  function tButtonClick(e, d, i) {
-    // alert("A circle was clicked and it's value is " + d.id);
-    d3.selectAll("circle.targetcircle")
-      .classed("cout", true)
-      .classed("coutselected", false)
-    d3.select("circle#cb" + d.id)
-      .classed("coutselected", true)
-  }
+  $('#' + selectTarget).change(function () {
+    selectedTarget = $(this).val()
+  })
 
-  function tButtonOver(e, d, i) {
-    d3.select("#" + tButtonTid)
-      .append("text")
-      .attr("x", d.id * rectwidth + rectwidth / 2)
-      .classed("coutover", true)
-      .classed("targettext", true)
-      .classed("skala", true)
-      .text(d.value)
-      .style("text-anchor", "middle")
-    // console.log("N-te Element:", d.id)
-  }
-  function tButtonOut(e, d, i) {
-    d3.select("text.coutover").remove()
-      .classed("cout", true)
-
-    // alert("A circle was clicked and it's value is " + d.id);
-  }
+  $('#BanalyseID').on("click", () => {
+    selectedZones.push(rules)
+    selectedZones.push(selectedSource)
+    selectedZones.push(selectedTarget)
+    analyseRules(selectedZones)
+  })
 
 }
 
 
-export { homeMatrix };
+export { selectZones };
