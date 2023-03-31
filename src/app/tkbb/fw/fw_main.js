@@ -10,17 +10,37 @@ function runFirewall() {
   requestData('GET', 'http://localhost:8080/fwservice')
     .then(csvdata => {
       rules = csvdata[0];
-      const szones = getZones(rules, 'source')
-      const dzones = getZones(rules, 'destination')    
-      selectZones(rules,szones,dzones)
+      
+      // Initialisiere fwrules
+      var fwList = setupFwList(rules)
+      console.log("fwlist")
+      console.log(fwList)
+  
+      // Extrahiere DISABLE Rules
+      var selection = ["[DISABLED]  ALLOW"]
+      // AllowedRules
+      var arules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
+      
+      // Berechne Zonenliste
+      const szones = getZones(arules, 'source')
+      const dzones = getZones(arules, 'destination')    
+      selectZones(arules,szones,dzones)
     })
 }
 
 function analyseRules(zoneSelection) {
   // var zoneSelection=initZoneSelection(szones, dzones)
-  console.log(zoneSelection[0])
-  console.log(zoneSelection[1])
-  console.log(zoneSelection[2])
+  console.log(zoneSelection['rules'])
+  console.log(zoneSelection['source'])
+  console.log(zoneSelection['target'])
+
+  var rules = zoneSelection['rules']
+  
+  var allDestinations = getDestinations(rules)
+  console.log("AllDestinations", allDestinations)
+  var allSources = getSources(rules)
+  console.log("AllSources", allSources)
+
   // ShowRules(rules)
   // var matrixdata = resolveRules(rules)
   // showTable(matrixdata)
@@ -64,14 +84,14 @@ function setupFwList(list) {
 // Extrahiert Zonen (source, destination)
 function getZones(rules, zone) {
   var zonelist = []
-  var fwList = setupFwList(rules)
+  // var fwList = setupFwList(rules)
 
-  // DISABLE RULE EXTRAHIEREN
-  var selection = ["[DISABLED]  ALLOW"]
-  var AllowedRules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
+  // // DISABLE RULE EXTRAHIEREN
+  // var selection = ["[DISABLED]  ALLOW"]
+  // var AllowedRules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
 
-  var resolvedSources = resolveTargetsfromList(AllowedRules, zone)
-  const zones = getNodeList(resolvedSources, zone)
+  var resolvedZones = resolveTargetsfromList(rules, zone)
+  const zones = getNodeList(resolvedZones, zone)
   zones.forEach(target => {
     zonelist.push(target[zone])
   })
@@ -104,15 +124,15 @@ function resolveRules(rules) {
 // Löst Rgeln nach Destinations auf
 function getDestinations(rules) {
 
-  var fwList = setupFwList(rules)
-  var resolvedDestination = resolveTargetsfromList(fwList, 'destination')
+  // var fwList = setupFwList(rules)
+  var resolvedDestination = resolveTargetsfromList(rules, 'destination')
   const destinations = getNodeList(resolvedDestination, 'destination')
   return destinations
 }
 // Löst Regeln nach Sources auf
 function getSources(rules) {
-  var fwList = setupFwList(rules)
-  var resolvedSources = resolveTargetsfromList(fwList, 'source')
+  // var fwList = setupFwList(rules)
+  var resolvedSources = resolveTargetsfromList(rules, 'source')
   const sources = getNodeList(resolvedSources, 'source')
   console.log("Sources", sources)
   return sources

@@ -9,7 +9,7 @@ import * as d3 from "d3";
 
 var selectedSource = ""
 var selectedTarget = ""
-var selectedZones = []
+var selectedZones = {}
 
 function selectZones(rules, szones, dzones) {
   const target = createTaskBox()
@@ -173,21 +173,24 @@ function selectZones(rules, szones, dzones) {
     .attr("transform", "translate(" + sourceTx + "," + sourceTy + ")")
     .attr("id", sourceTid)
 
-  $('#' + selectSource).change(function () {
+  // Auswahl Source - übernehmen
+  $('#' + selectSource).on("change", function (){
     selectedSource = $(this).val()
   })
-
-  $('#' + selectTarget).change(function () {
-    selectedTarget = $(this).val()
+  
+  // Auswahl Target - übernehmen
+  $('#' + selectTarget).on("change", function (){
+    selectedTarget = $(this).val()  
   })
 
-  $('#BanalyseID').on("click", () => {
-    selectedZones.push(rules)
-    selectedZones.push(selectedSource)
-    selectedZones.push(selectedTarget)
+  // Auswahl packen und an Analyse übergeben
+  $('#BanalyseID').on("click", function () {
+    selectedZones['rules']=rules
+    selectedZones['source']=selectedSource
+    selectedZones['target']=selectedTarget
+    // Weiter mit Analyse  
     analyseRules(selectedZones)
   })
-
 }
 
 
