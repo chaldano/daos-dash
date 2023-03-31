@@ -2,6 +2,7 @@ import { requestData } from 'TkbbFolder/net/client.js';
 import { initZoneSelection } from 'TkbbFolder/fw/fw_left.js';
 // import { createTaskBox } from 'TkbbFolder/dom/html.js';
 import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
+import { createDisplayBox } from 'TkbbFolder/dom/html.js';
 import * as d3 from "d3";
 
 function createHash(matrixdata) {
@@ -78,8 +79,10 @@ function createMatrix(matrixdata) {
   return matrixdata
 }
 
-function runMatrix(matrixdata, target) {
+function runMatrix(matrixdata) {
   // console.log("DisplayTarget", target)
+  const target = createDisplayBox()
+  
   var sources = matrixdata.source
   var targets = matrixdata.target
   var matrix = matrixdata.matrix
@@ -549,5 +552,5 @@ function homeMatrix() {
 }
 
 
-// export { RunFirewall };
+export { runMatrix };
 // export { homeMatrix };

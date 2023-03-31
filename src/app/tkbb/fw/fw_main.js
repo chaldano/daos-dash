@@ -1,5 +1,6 @@
 import { requestData } from 'TkbbFolder/net/client.js';
 import { selectZones } from 'TkbbFolder/fw/fw_left.js';
+import { runMatrix } from 'TkbbFolder/fw/fw_upper.js';
 // import { createTaskBox } from 'TkbbFolder/dom/html.js';
 import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
 import * as d3 from "d3";
@@ -41,9 +42,35 @@ function analyseRules(zoneSelection) {
   var allSources = getSources(rules)
   console.log("AllSources", allSources)
 
+  // Auflösung von Mehrfachnennung von Source und Target ) 
+  // const targetDisplay = createDisplayBox()
+  // // const svghome = homeMatrix(targetGroup, targetDisplay)
+  
   // ShowRules(rules)
   // var matrixdata = resolveRules(rules)
   // showTable(matrixdata)
+
+const ExcludedSources = ["DMZ", "DMZ_PUBLIC", "SSL-VPN", "SITE2SITE"]
+    const Destinations = ["TRUST"]
+    var matrixdata = extractData(rules, ExcludedSources, Destinations, true) // true - extrahieren 
+    matrixdata = createHash(matrixdata)
+    matrixdata = createMatrix(matrixdata)
+    const svgtarget = runMatrix(matrixdata)
+  
+    // var allDestinations = getDestinations(rules)
+    // console.log("AllDestinations", allDestinations)
+    // var allSources = getSources(rules)
+    // console.log("AllSources", allSources)
+  
+    // const ExcludedSources = ["DMZ", "DMZ_PUBLIC", "SSL-VPN", "SITE2SITE"]
+    // const Destinations = ["TRUST"]
+    // var matrixdata = extractData(rules, ExcludedSources, Destinations, true) // true - extrahieren 
+    // matrixdata = createHash(matrixdata)
+    // matrixdata = createMatrix(matrixdata)
+    
+    var sadr = matrixdata.sadrip
+    console.log("SADR",sadr)
+
 
 }
 
@@ -142,15 +169,15 @@ function extractData(rules, SourceFilter, Destination, NEGATION) {
   // console.log("Exludes", exSources)
 
   // Initialisiere Firewallliste
-  var fwList = setupFwList(rules)
-  console.log("FwRules", fwList)
+  // var fwList = setupFwList(rules)
+  // console.log("FwRules", fwList)
 
   // DISABLE RULE EXTRAHIEREN
   var selection = ["[DISABLED]  ALLOW"]
-  var DisabledRules = filterList(fwList, "action", selection, false); // DISABLE filtern
+  var DisabledRules = filterList(rules, "action", selection, false); // DISABLE filtern
   console.log("DisabledRules", DisabledRules)
 
-  var AllowedRules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
+  var AllowedRules = filterList(rules, "action", selection, true); // DISABLE extrahieren
   console.log("AllowedRules", AllowedRules)
 
   // (1) Alle Regeln nach DESTINATION aufschlüsseln
