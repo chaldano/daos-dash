@@ -1,25 +1,8 @@
-import _, { isLength } from 'lodash';
+import _, { isLength }  from 'lodash';
 
-import { DomElement } from 'TkbbFolder/dom/html.js';
-import * as Daos from 'TkbbFolder/daos.js';
-
-// import { registerButtonFunction } from 'TkbbFolder/dom/html.js';
-
-// import { registerFormFunction } from 'TkbbFolder/dom/html.js';
-
-// import { RunMatrix } from 'TkbbFolder/eventbuttons/box1/button-matrix.js';
-// import { RunCCMatrix } from 'TkbbFolder/eventbuttons/box1/button-ccmatrix.js';
-import { runFirewall } from 'TkbbFolder/fw/fw_main.js';
-import { RunAnalyse } from 'TkbbFolder/fw/fw_right-analyse.js';
-
-// import { homeMatrix } from 'TkbbFolder/fw/fw_left.js';
-// import { ShowAdrRelation } from 'TkbbFolder/eventbuttons/b-d3fwAddresses.js';
-// import { RunAlert2 } from 'TkbbFolder/boxbuttons/box1/testalerts.js';
-// import { RunTable } from 'TkbbFolder/eventbuttons/box1/button-table.js';
-// import { RunForm } from 'TkbbFolder/boxbuttons/box1/buttonsb1Submit.js';
-// import { FB1Button1 } from 'TkbbFolder/boxbuttons/box1/buttonsb1b1.js';
-// import { FB2Button1 } from 'TkbbFolder/boxbuttons/box2/buttonsb2b1.js';
-// import { FB3Button1 } from 'TkbbFolder/boxbuttons/box3/buttonsb3b1.js';
+import { DomElement }   from 'TkbbFolder/dom/html.js';
+import * as Daos        from 'TkbbFolder/daos.js';
+import { runFirewall }  from 'TkbbFolder/fw/fw_main.js';
 
 const Adresse = [
   {
@@ -270,21 +253,24 @@ function createForm1(targetID) {
 }
 
 function createNavBar(targetID) {
-  const Nav = new DomElement({ targetid: targetID, ownid: 'navid', type: 'nav' })
+  const Nav = new DomElement({ targetid: targetID, ownid: 'navId', type: 'nav' })
   // Nav-Bar
   Nav.addClass('navbar')
   Nav.addClass('navbar-expand-lg')
   // Nav.addClass('fixed-top')
+  Nav.addClass('position-relative')
 
 
   // Brand-ID to Nav-Bar
-  const Brand = new DomElement({ targetid: 'navid', ownid: 'brandid', type: 'a' })
+  const Brand = new DomElement({ targetid: 'navId', ownid: 'brandid', type: 'a' })
   Brand.addClass('navbar-brand')
+  // Brand.addClass('py-0')
   Brand.addAttribute('href', '#')
   Brand.addContent('Haeckerküchen')
 
-  const BrandBtn = new DomElement({ targetid: 'navid', ownid: 'brandbtnid', type: 'button' })
+  const BrandBtn = new DomElement({ targetid: 'navId', ownid: 'brandbtnid', type: 'button' })
   BrandBtn.addClass('navbar-toggler')
+  // BrandBtn.addClass('py-0')
   BrandBtn.addClass('navbar-dark')
   BrandBtn.addAttribute('type', 'button')
   BrandBtn.addAttribute('data-toggle', 'collapse')
@@ -298,8 +284,9 @@ function createNavBar(targetID) {
   const BtnSpan = new DomElement({ targetid: 'brandbtnid', ownid: 'btnspnid', type: 'span' })
   BtnSpan.addClass('navbar-toggler-icon')
 
-  const MainNav = new DomElement({ targetid: 'navid', ownid: 'content-navigation', type: 'div' })
+  const MainNav = new DomElement({ targetid: 'navId', ownid: 'content-navigation', type: 'div' })
   MainNav.addClass('collapse')
+  // MainNav.addClass('py-0')
   MainNav.addClass('navbar-collapse')
 
   // Nav-List to Nav-Bar
@@ -353,17 +340,23 @@ function createNavBar(targetID) {
 
 function createPage() {
 
-  // document.body.appendChild(mainPage());
+  // Navbar einfügen
   createNavBar('main')
 
-  const mainContainer = new DomElement({ targetid: 'main', ownid: 'mainContainer', type: 'div' })
-  mainContainer.addClass('container-fluid')
-  // mainContainer.addClass('container')
+  const mainId = new DomElement({ targetid: 'main', ownid: 'mainId', type: 'div' })
+  mainId.addClass('container-fluid')
+  // mainId.addClass('fixed-bottom')
+  // mainId.addClass('position-relative')
+  // mainId.addClass('m-1')
+  // mainId.addClass('container')
 
   // Display Area  
-  const DisplayPage = new DomElement({ targetid: 'mainContainer', ownid: 'displayRow', type: 'div' })
-  DisplayPage.addClass('row')
-  // DisplayPage.addClass('ms-0')
+  const DisplayRow = new DomElement({ targetid: 'mainId', ownid: 'displayRow', type: 'div' })
+  DisplayRow.addClass('row')
+  DisplayRow.addClass('bg-secondary')
+  DisplayRow.addClass('text-white')
+  
+  // DisplayRow.addClass('m-1')
   // DisplayPage.addClass('me-0')
   
   const Upper = new DomElement({ targetid: 'displayRow', ownid: 'upperid', type: 'div' })
@@ -374,13 +367,13 @@ function createPage() {
   // Upper.addClass('justify-content-center')
   // DisplayPage.addClass('my-0')
   Upper.addClass('col-12')
-  // Upper.addClass('bg-info')
-  Upper.addClass('text-white')
-  Upper.addClass('p-2')
+  Upper.addClass('p-1')
   
   // Content Area
-  const RoomPage = new DomElement({ targetid: 'mainContainer', ownid: 'roomRow', type: 'div' })
-  RoomPage.addClass('row')
+  const RoomRow = new DomElement({ targetid: 'mainId', ownid: 'roomRow', type: 'div' })
+  RoomRow.addClass('row')
+  RoomRow.addClass('bg-dark')
+  RoomRow.addClass('text-white')
   
   // RoomPage.addClass('ms-0')
   // RoomPage.addClass('me-0')
@@ -390,18 +383,18 @@ function createPage() {
   // ADD LEFT Display-Windows
   const Left = new DomElement({ targetid: 'roomRow', ownid: 'leftid', type: 'div' })
   Left.addClass('col-4')
-  Left.addClass('text-white')
+  // Left.addClass('text-white')
   Left.addClass('p-1')
   
   const Middle = new DomElement({ targetid: 'roomRow', ownid: 'middleid', type: 'div' })
   Middle.addClass('col-4')
-  Middle.addClass('text-white')
+  // Middle.addClass('text-white')
   Middle.addClass('p-1')
   
   // ADD RIGHT Windows
   const Right = new DomElement({ targetid: 'roomRow', ownid: 'rightid', type: 'div' })
   Right.addClass('col-4')
-  Right.addClass('text-white')
+  // Right.addClass('text-white')
   
   //TaskBox in Left verlinken
   Right.addClass('p-1')
@@ -419,12 +412,6 @@ function createPage() {
   
   const DisplayBox = new DomElement({ targetid: 'upperid', ownid: 'displayBoxID', type: 'div' })
   DisplayBox.addClass('displayBox')
-
-
-  // createForm1('rightid');
-  // registerForm()
-
-  // homeMatrix()
 
 }
 

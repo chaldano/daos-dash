@@ -1,22 +1,83 @@
 import { requestData } from 'TkbbFolder/net/client.js';
 
-import { createDisplayBox } from 'TkbbFolder/dom/html.js';
-import { createContentBox } from 'TkbbFolder/dom/html.js';
+// import { createDisplayBox } from 'TkbbFolder/dom/html.js';
+// import { createContentBox } from 'TkbbFolder/dom/html.js';
 import { createDetailBox } from 'TkbbFolder/dom/html.js';
-import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
+// import { removeDetailBox } from 'TkbbFolder/dom/html.js';
 
-import { createTable } from 'TkbbFolder/tables/tabbasic.js';
-import { putTableHeader } from 'TkbbFolder/tables/tabbasic.js';
-import { putTable } from 'TkbbFolder/tables/tabbasic.js';
-import { putTableDetail } from 'TkbbFolder/tables/tabbasic.js';
+import { getRowByIndex } from 'TkbbFolder/tables/tabbasic.js';
+// import { putTableHeader } from 'TkbbFolder/tables/tabbasic.js';
+// import { putTable } from 'TkbbFolder/tables/tabbasic.js';
+// import { putTableDetail } from 'TkbbFolder/tables/tabbasic.js';
 
-import { removeAllBox } from 'TkbbFolder/dom/html.js';
+// import { removeAllBox } from 'TkbbFolder/dom/html.js';
 import * as d3 from "d3";
-import { easeCircle } from 'd3';
+// import { easeCircle } from 'd3';
 // import { DomElement } from 'TkbbFolder/dom/html.js';
 import * as Daos from 'TkbbFolder/daos.js';
-import { Canvas } from '../daos';
+// import { Canvas } from '../daos';
 
+
+function putAdrDetail(selectedRow, tableArray, matrixdata) {
+  console.log("Matrixdata", matrixdata)
+  console.log("TableArray", tableArray)
+  console.log("SelectdRow", selectedRow)
+
+  var sadrip = matrixdata.sadrip
+  var tabkeys = Object.keys(tableArray[0])
+  var contentKey = tabkeys[0]
+
+  const targetDetail = createDetailBox()
+  var selectedContent = selectedRow.find('td:eq(0)').text()
+
+  // Suche ausgewählte Zeile in Tabelle      
+  var rowContent = getRowByIndex(contentKey, selectedContent, tableArray)
+  console.log("RowContent", rowContent)
+  
+  var serviceKey = `${rowContent.source}-${rowContent.service}`
+  // console.log ("Zone",rowContent.source)
+  console.log ("Service",sadrip[serviceKey])
+  
+  var targets = []
+  var sources = []
+
+  sadrip[serviceKey].dadr.forEach(adr=> {
+    var adrobj = {}
+    adrobj['adr'] = adr
+    targets.push(adrobj)
+  })
+  
+  sadrip[serviceKey].sadr.forEach(adr=> {
+    var adrobj = {}
+    adrobj['adr'] = adr
+    sources.push(adrobj)
+  })
+  
+  var zones = []
+  var sz = new Daos.Zone(rowContent.source, 'sourcezone')
+
+  var svc = new Daos.Zone("Service",'servicezone')
+  var tz = new Daos.Zone(matrixdata.zone,'targetzone')
+  
+  zones.push(sz)
+  zones.push(svc)
+  zones.push(tz)
+
+  var proxy = []
+  var prx = new Daos.Proxy("PaloAlto", "10.10.1.200", rowContent.service)
+  proxy.push(prx)
+  
+  var service = new Daos.Service(rowContent.service)
+  
+  console.log ("Targets",targets)
+  console.log ("Sources",sources)
+  console.log ("Zones",zones)
+  console.log ("Proxy",proxy)
+  // console.log ("Service",service)
+  
+  ShowAdrRelation(proxy, sources, targets, zones)
+
+}
 
 function ShowAdrRelation(proxy, sources, targets, zones) {
 
@@ -199,7 +260,7 @@ function setZones(zlist, par, target) {
       d['height'] = par.heightz
       return par.heightz
     })
-
+  // Setze Zonen-Text 
   zone
     .append("g")
     .selectAll("rect")
@@ -213,6 +274,7 @@ function setZones(zlist, par, target) {
     .attr("y", (d) => { return (d.y + d.height * 2 / 3) })
     .classed("zone", true)
     // .attr("class", (d) => { return d.Name})
+    .style("fill", "white")
     .style("text-anchor", "start")
 
 
@@ -221,7 +283,7 @@ function setZones(zlist, par, target) {
 
 
 }
-
+// Zeichne Links und beschrifte Endpunkte
 function drawLink(proxy, sources, targets, par, targetid) {
 
   // Proxy
@@ -262,7 +324,7 @@ function drawLink(proxy, sources, targets, par, targetid) {
     .join("path")
     .attr("d", link)
     .attr("fill", "none")
-    .attr("stroke", "black");
+    .attr("stroke", "white");
 
   // Destination-Text
   d3.select('#dst')
@@ -276,6 +338,7 @@ function drawLink(proxy, sources, targets, par, targetid) {
     // .attr("y", (d) => { return d.cy + d.r })
     .attr("y", (d) => { return d.cy })
     .attr("class", "zone")
+    .style("fill", "white")
     .style("text-anchor", "start")
 
   // Sourcen-Text 
@@ -290,6 +353,7 @@ function drawLink(proxy, sources, targets, par, targetid) {
     // .attr("y", (d) => { return d.cy + d.r })
     .attr("y", (d) => { return d.cy })
     .attr("class", "zone")
+    .style("fill", "white")
     .style("text-anchor", "end")
 
   d3.select('#proxy')
@@ -302,9 +366,11 @@ function drawLink(proxy, sources, targets, par, targetid) {
     .attr("x", (d) => { return d.cx })
     .attr("y", (d) => { return d.cy + 3 * par.dl })
     .classed("zone", true)
+    .style("fill", "white")
     .style("text-anchor", "end")
   // .style("writing-mode", "horizontal-tb") // from Top to Bottom
   // .attr("transform", (d) => { return "translate(" + d.cx + "," + d.cy + ") rotate(90)"})
 
 }
-export { ShowAdrRelation };
+// export { ShowAdrRelation };
+export { putAdrDetail }

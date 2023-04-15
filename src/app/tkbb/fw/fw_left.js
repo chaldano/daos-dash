@@ -35,8 +35,18 @@ function selectZones(rules, szones, dzones) {
 
   const selectSource = "selectSZone"
   const selectTarget = "selectTZone"
-  selectedSource = szones[0]
-  selectedTarget = dzones[0]
+  
+  // Source: Wildcard hinzufügen (alle Sources)
+  // Destination: ist explizit
+  szones.unshift('*')
+  // dzones.unshift('*')
+  
+  selectedSource = [] 
+  selectedTarget = []
+  
+  // Default: 1:1 Source/Target
+  selectedSource.push(szones[0])
+  selectedTarget.push(dzones[0])
 
   const matrixT1id = "matrixT1"
   const matrixT1x = matrixX1 + matrixwidth / 2
@@ -175,17 +185,22 @@ function selectZones(rules, szones, dzones) {
 
   // Auswahl Source - übernehmen
   $('#' + selectSource).on("change", function (){
-    selectedSource = $(this).val()
+    selectedSource.shift()  
+    selectedSource.push($(this).val())
+    // console.log("SelectedSource: ",selectedSource)
   })
   
   // Auswahl Target - übernehmen
   $('#' + selectTarget).on("change", function (){
-    selectedTarget = $(this).val()  
+    selectedTarget.shift()  
+    selectedTarget.push($(this).val())  
+    // console.log("SelectedTarget: ",selectedTarget)
   })
 
   // Auswahl packen und an Analyse übergeben
   $('#BanalyseID').on("click", function () {
     selectedZones['rules']=rules
+    
     selectedZones['source']=selectedSource
     selectedZones['target']=selectedTarget
     // Weiter mit Analyse  

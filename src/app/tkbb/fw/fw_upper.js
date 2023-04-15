@@ -1,85 +1,9 @@
-import { requestData } from 'TkbbFolder/net/client.js';
-import { initZoneSelection } from 'TkbbFolder/fw/fw_left.js';
-// import { createTaskBox } from 'TkbbFolder/dom/html.js';
-import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
 import { createDisplayBox } from 'TkbbFolder/dom/html.js';
+import { showTableSource } from 'TkbbFolder/fw/fw_middle.js';
+import { removeTable } from 'TkbbFolder/fw/fw_middle.js';
 import * as d3 from "d3";
 
-function createHash(matrixdata) {
-  var sourceNodes = matrixdata.source
-  var serviceNodes = matrixdata.target
-  var SadrRules = matrixdata.sadr
-  var ipaddresses = matrixdata.sadrip
-
-  const relationhash = {}
-  sourceNodes.forEach(srcnode => {
-    SadrRules.forEach(item => {
-      // console.log("Item",item.source,srcnode.source)
-      if (item.source == srcnode.source) {
-        var ipadr
-        // console.log("Src:",srcnode.source)
-        var grid = {}
-        // grid.id = `${item.source}-${item.service}.${item.app}`
-        var sourceid = srcnode.id
-        var serviceid
-        for (var obj of serviceNodes) {
-          if (obj["service.app"] == item["service.app"]) {
-            serviceid = obj.id
-            ipadr = ipaddresses[`${srcnode.source}-${obj['service.app']}`]
-            // console.log("Paar",ipadr)
-            break
-          } else {
-            // console.log("raus",`${sourceid}-${serviceid}` )
-          }
-
-        }
-        grid.ipadr = ipadr
-        grid.id = `${sourceid}-${serviceid}`
-        grid.action = item.action
-        grid.ruleid = item.ruleid
-        // Object mit attribute als Differenz
-        relationhash[grid.id] = grid
-      }
-    })
-  })
-  console.log("Hash", relationhash)
-  // const zone = Destination[0] // TargetZone
-
-  matrixdata['rhash'] = relationhash
-  return matrixdata
-}
-
-function createMatrix(matrixdata) {
-  var targets = matrixdata.target
-  var sources = matrixdata.source
-  var relationhash = matrixdata.rhash
-
-  var matrix = []
-  targets.forEach((target, a) => {
-    sources.forEach((source, b) => {
-      var grid = {
-        id: `${source.id}-${target.id}`,
-        x: a,
-        y: b, action: 0, weight: 0
-      };
-      if (relationhash[grid.id]) {
-        grid.action = relationhash[grid.id].action;
-        grid.ruleid = relationhash[grid.id].ruleid;
-        if (grid.action == "ALLOW") {
-          grid.weight = 5
-        }
-        matrix.push(grid);
-      }
-      else {
-        matrix.push(grid);
-      }
-    });
-  });
-  matrixdata['matrix'] = matrix
-  return matrixdata
-}
-
-function runMatrix(matrixdata) {
+function drawMatrix(matrixdata) {
   // console.log("DisplayTarget", target)
   const target = createDisplayBox()
   
@@ -115,7 +39,7 @@ function runMatrix(matrixdata) {
   const screenheight = "700"
   const textdistance = "10"
 
-  const baseX = 200;
+  const baseX = 150;
   const offsetX = 0;
   const baseY = 50;
   const offsetY = 0;
@@ -265,22 +189,22 @@ function runMatrix(matrixdata) {
 
 
   // Target Button-Leiste
-  var tButton = d3.select("#" + tButtonid)
-  tButton
-    .selectAll("circle.cout")
-    .data(targetGroup)
-    .enter()
-    .append('circle')
-    .classed("cout", true)
-    .classed("targetcircle", true)
-    .attr("cx", (d, i) => { return rectwidth + i * rectwidth + rectwidth / 2 })
-    .attr("cy", 0.5)
-    .attr("id", (d, i) => { return "cb" + i })
-    .attr("r", rectwidth / 2)
+  // var tButton = d3.select("#" + tButtonid)
+  // tButton
+  //   .selectAll("circle.cout")
+  //   .data(targetGroup)
+  //   .enter()
+  //   .append('circle')
+  //   .classed("cout", true)
+  //   .classed("targetcircle", true)
+  //   .attr("cx", (d, i) => { return rectwidth + i * rectwidth + rectwidth / 2 })
+  //   .attr("cy", 0.5)
+  //   .attr("id", (d, i) => { return "cb" + i })
+  //   .attr("r", rectwidth / 2)
 
-    .on('click', tButtonClick)
-    .on('mouseover', tButtonOver)
-    .on('mouseout', tButtonOut)
+  //   .on('click', tButtonClick)
+  //   .on('mouseover', tButtonOver)
+  //   .on('mouseout', tButtonOut)
 
 
   // Hier wird der Source-Text angezeigt
@@ -302,11 +226,10 @@ function runMatrix(matrixdata) {
   box.selectAll("rect.grid").on("click", gridState);
 
   function gridOver(event, d) {
-    // console.log("State:", matrixState)
     if (matrixState == "Selectable") {
-      // console.log("Durch..")
       box.selectAll("rect.grid").attr("class", p => {
         if (p.x == d.x || p.y == d.y) {
+          // console.log("Punkt:",d.x +"-"+d.y )
           return "gridovered"
         }
         else {
@@ -364,193 +287,23 @@ function runMatrix(matrixdata) {
   // States: "Selected" (einfrieren; "Selectable" (mouseover))
   function gridState(event, d) {
     if (matrixState == "Selected") {
-      // console.log("Durch1")
+      // Status aufheben
       matrixState = "Selectable"
       box.selectAll("rect.gridselected").attr("class", p => { return "gridovered" })
-
+      removeTable()
     }
     else {
-      console.log("Durch2")
+      // Status setzen
       matrixState = "Selected"
-      box.selectAll("rect.gridovered").attr("class", p => { return "gridselected" })
+      var index
+      box.selectAll("rect.gridovered").attr("class", p => { 
+        index = p.y
+        return "gridselected" })
+      // p.y kennzeichnet die selektierte Zeile
+      showTableSource(matrixdata, index)
     }
   }
 
 }
 
-
-function homeMatrix() {
-
-  // removeAllBox()
-  const target = createTaskBox()
-  // var target = 'taskBox'
-  console.log("Target:", target)
-  const screenwidth = "350"
-  const screenheight = "300"
-  const textdistance = "10"
-
-  const rectwidth = 15              // Matrixelementgröße
-  const matrixwidth = 12 * rectwidth  // Matrixhome
-
-  const baseX = screenwidth / 2 - matrixwidth / 2;
-  // const baseX = 0;
-  // const baseY = 0;
-  const baseY = screenheight / 2 - matrixwidth / 2;
-
-  const svgid = "svg1"
-
-  // Matrixbereich
-  const matrixX1 = baseX
-  const matrixY1 = baseY
-  const matrixid1 = "matrix1"
-
-  // Beschriftungsbereich und Parameter der Matrix
-  const matrixhead = 3 * rectwidth
-
-  const matrixT1id = "matrixT1"
-  const matrixT1x = matrixX1 + matrixwidth / 2
-  const matrixT1y = matrixY1 - matrixhead
-
-
-  const strokewidthMax = "4px"
-  const strokewidthMin = "1px"
-
-  // Konstante als Text- und Buttonbereiche (Source-Target)
-  // Target
-  // var targetzone = matrixdata.zone
-  // const tButtonid = "tButtonID"
-  // const tButtonX = matrixX+targets.length * rectwidth - (targetGroup.length+1) * rectwidth
-  // const tButtonY = matrixTy
-
-  // const tButtonTid = "tButtonTextID"
-  // // const tButtonTx = tButtonX+rectwidth/2
-  // const tButtonTx = tButtonX+rectwidth
-  // const tButtonTy = tButtonY - textdistance
-
-
-  // // var serviceSkala = (targets.length * rectwidth + matrixhead) - targetGroup.length * rectwidth
-  // const targetTid = "tTextID"
-  // const targetTx = matrixX
-  // const targetTy = matrixY - textdistance
-
-
-  // Source
-  const sButtonid = "sButtonID"
-  // const sButtonX
-  // const sButtonY
-
-  const sourceTid = "sTextID"
-  const sourceTx = matrixX1 - textdistance
-  const sourceTy = matrixY1
-
-
-
-  // Source-Text-Beschriftung
-  // // Target-Text-Beschriftung
-
-
-
-
-  // Setze SVG-Box
-  const box = d3.select('#' + target)
-  box
-    .append('svg')
-    .attr("width", screenwidth)
-    .attr("height", screenheight)
-    .attr("id", svgid)
-
-  // Setze Matrix-Bereiche  
-  var canvas = d3.select("#" + svgid)
-  canvas
-    .append("g")
-    .attr("transform", "translate(" + matrixX1 + "," + matrixY1 + ")")
-    .attr("id", matrixid1)
-
-    .append("rect")
-    .attr("class", "grid")
-    .attr("width", matrixwidth)
-    .attr("height", matrixwidth)
-    .attr("x", 0)
-    .attr("y", 0)
-
-
-  // M1 Axen-Beschriftung
-  // Linie
-  var canvas = d3.select("#" + svgid)
-  canvas
-    .append("g")
-    .attr("transform", "translate(" + matrixT1x + "," + matrixT1y + ")")
-    .attr("id", matrixT1id)
-
-  // M1-Service Überschrift
-  var matrixT = d3.select("#" + matrixT1id)
-  matrixT
-    .append("text")
-    // .classed("skala", true)
-    .attr("x", rectwidth)
-    .attr("y", rectwidth / 2)
-    .attr("class", "matrixT")
-    // .text("Services of Zone: " + targetzone)
-    .text("Target Zone ")
-    .style("text-anchor", "start")
-
-  // M1-Source Überschrift
-  var sourcename = "Source Zone"
-  matrixT
-    .append("text")
-    // .classed("skala", true)
-    .attr("x", -sourcename.length - rectwidth / 2)
-    .attr("y", rectwidth / 2)
-    .attr("class", "matrixT")
-    .text(sourcename)
-    .style("text-anchor", "end")
-
-  // M1 Fw
-  var matrix1 = d3.select("#" + matrixid1)
-  matrix1
-    .append("line")
-    .attr("class", "fwline")
-    .attr("x1", matrixwidth / 2)
-    .attr("y1", 0 - matrixhead)
-    .attr("x2", matrixwidth / 2)
-    .attr("y2", matrixwidth + matrixhead)
-
-  // Source-Text-Bereich
-  canvas
-    .append("g")
-    .attr("transform", "translate(" + sourceTx + "," + sourceTy + ")")
-    .attr("id", sourceTid)
-
-
-  function tButtonClick(e, d, i) {
-    // alert("A circle was clicked and it's value is " + d.id);
-    d3.selectAll("circle.targetcircle")
-      .classed("cout", true)
-      .classed("coutselected", false)
-    d3.select("circle#cb" + d.id)
-      .classed("coutselected", true)
-  }
-
-  function tButtonOver(e, d, i) {
-    d3.select("#" + tButtonTid)
-      .append("text")
-      .attr("x", d.id * rectwidth + rectwidth / 2)
-      .classed("coutover", true)
-      .classed("targettext", true)
-      .classed("skala", true)
-      .text(d.value)
-      .style("text-anchor", "middle")
-    // console.log("N-te Element:", d.id)
-  }
-  function tButtonOut(e, d, i) {
-    d3.select("text.coutover").remove()
-      .classed("cout", true)
-
-    // alert("A circle was clicked and it's value is " + d.id);
-  }
-
-}
-
-
-export { runMatrix };
-// export { homeMatrix };
+export { drawMatrix };

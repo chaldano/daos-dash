@@ -1,31 +1,32 @@
 import { requestData } from 'TkbbFolder/net/client.js';
 import { selectZones } from 'TkbbFolder/fw/fw_left.js';
-import { runMatrix } from 'TkbbFolder/fw/fw_upper.js';
+import { drawMatrix } from 'TkbbFolder/fw/fw_upper.js';
 // import { createTaskBox } from 'TkbbFolder/dom/html.js';
 import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
 import * as d3 from "d3";
 
 function runFirewall() {
-  removeDisplayBox()
+  // removeDisplayBox()
   var rules
   requestData('GET', 'http://localhost:8080/fwservice')
     .then(csvdata => {
       rules = csvdata[0];
-      
+
       // Initialisiere fwrules
       var fwList = setupFwList(rules)
       console.log("fwlist")
       console.log(fwList)
-  
+
       // Extrahiere DISABLE Rules
       var selection = ["[DISABLED]  ALLOW"]
       // AllowedRules
       var arules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
-      
+
       // Berechne Zonenliste
       const szones = getZones(arules, 'source')
-      const dzones = getZones(arules, 'destination')    
-      selectZones(arules,szones,dzones)
+      const dzones = getZones(arules, 'destination')
+
+      selectZones(arules, szones, dzones)
     })
 }
 
@@ -36,44 +37,21 @@ function analyseRules(zoneSelection) {
   console.log(zoneSelection['target'])
 
   var rules = zoneSelection['rules']
-  
+
   var allDestinations = getDestinations(rules)
   console.log("AllDestinations", allDestinations)
   var allSources = getSources(rules)
   console.log("AllSources", allSources)
 
   // Auflösung von Mehrfachnennung von Source und Target ) 
-  // const targetDisplay = createDisplayBox()
-  // // const svghome = homeMatrix(targetGroup, targetDisplay)
-  
-  // ShowRules(rules)
-  // var matrixdata = resolveRules(rules)
-  // showTable(matrixdata)
+  var matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target']) // true - extrahieren 
+  matrixdata = createHash(matrixdata)
+  matrixdata = createMatrix(matrixdata)
+  const svgtarget = drawMatrix(matrixdata)
 
-const ExcludedSources = ["DMZ", "DMZ_PUBLIC", "SSL-VPN", "SITE2SITE"]
-    const Destinations = ["TRUST"]
-    var matrixdata = extractData(rules, ExcludedSources, Destinations, true) // true - extrahieren 
-    matrixdata = createHash(matrixdata)
-    matrixdata = createMatrix(matrixdata)
-    const svgtarget = runMatrix(matrixdata)
-  
-    // var allDestinations = getDestinations(rules)
-    // console.log("AllDestinations", allDestinations)
-    // var allSources = getSources(rules)
-    // console.log("AllSources", allSources)
-  
-    // const ExcludedSources = ["DMZ", "DMZ_PUBLIC", "SSL-VPN", "SITE2SITE"]
-    // const Destinations = ["TRUST"]
-    // var matrixdata = extractData(rules, ExcludedSources, Destinations, true) // true - extrahieren 
-    // matrixdata = createHash(matrixdata)
-    // matrixdata = createMatrix(matrixdata)
-    
-    var sadr = matrixdata.sadrip
-    console.log("SADR",sadr)
-
-
+  var sadr = matrixdata.sadrip
+  console.log("SADR", sadr)
 }
-
 
 // Zeigt initialisierte Liste an
 function ShowRules(rules) {
@@ -165,7 +143,7 @@ function getSources(rules) {
   return sources
 }
 // Extrahiert Regeln auf Grundlage von Zonen
-function extractData(rules, SourceFilter, Destination, NEGATION) {
+function extractData(rules, zoneSource, zoneTarget) {
   // console.log("Exludes", exSources)
 
   // Initialisiere Firewallliste
@@ -173,33 +151,37 @@ function extractData(rules, SourceFilter, Destination, NEGATION) {
   // console.log("FwRules", fwList)
 
   // DISABLE RULE EXTRAHIEREN
-  var selection = ["[DISABLED]  ALLOW"]
-  var DisabledRules = filterList(rules, "action", selection, false); // DISABLE filtern
-  console.log("DisabledRules", DisabledRules)
+  // var selection = ["[DISABLED]  ALLOW"]
+  // var DisabledRules = filterList(rules, "action", selection, false); // DISABLE filtern
+  // console.log("DisabledRules", DisabledRules)
 
-  var AllowedRules = filterList(rules, "action", selection, true); // DISABLE extrahieren
-  console.log("AllowedRules", AllowedRules)
+  // var AllowedRules = filterList(rules, "action", selection, true); // DISABLE extrahieren
+  // console.log("AllowedRules", AllowedRules)
 
-  // (1) Alle Regeln nach DESTINATION aufschlüsseln
+  // (1) Alle Regeln nach zoneTarget aufschlüsseln
 
-  // Auflösen von Destination
-  var resolvedDestination = resolveTargetsfromList(AllowedRules, 'destination')
-  console.log("AllowsDestinationRules", resolvedDestination)
+  // Auflösen von zoneTarget
+  var resolvedDestination = resolveTargetsfromList(rules, 'destination')
+  // console.log("DestinationRules", resolvedDestination)
 
   // Zielzone (Destination) aus Destination filtern
-  var DestinationRules = filterList(resolvedDestination, "destination", Destination, false); // false: nur destination filtern
-  console.log("TrustRules", DestinationRules)
+  // console.log("Filter: ", zoneTarget)
+  var DestinationRules = filterList(resolvedDestination, "destination", zoneTarget, false); // false: nur destination filtern
+  // console.log("TrustRules", DestinationRules)
 
   // Auflösen von Source für DestinationRules
   var SourceRules = resolveTargetsfromList(DestinationRules, 'source')
-  console.log("SourceRules", SourceRules)
+  // console.log("SourceRules", SourceRules)
 
-  // Exclude Regeln ?
-  var SourceRulesExtracted = SourceRules
-  console.log("SourceRulesExtracted", SourceRulesExtracted)
-
-  SourceRulesExtracted = filterList(SourceRulesExtracted, "source", SourceFilter, NEGATION);
-  console.log("SourceRulesExtracted", SourceRulesExtracted)
+  if (zoneSource == "*") {
+    // Exclude Regeln ?
+    var SourceRulesExtracted = SourceRules
+    // console.log("SourceRulesExtracted-Wildcard", SourceRulesExtracted)
+  } else {
+    
+    SourceRulesExtracted = filterList(SourceRules, "source", zoneSource, false);
+    // console.log("SourceRulesExtracted-Filter", SourceRulesExtracted)
+  }
   // })
   // }
   // else {
@@ -210,40 +192,40 @@ function extractData(rules, SourceFilter, Destination, NEGATION) {
 
   //SERVICE Rules aus SourceRules
   var ServiceRules = resolveTargetsfromList(SourceRulesExtracted, 'service')
-  console.log("ServiceRules", ServiceRules)
+  // console.log("ServiceRules", ServiceRules)
 
   const AppRules = resolveTargetsfromList(ServiceRules, 'app')
-  console.log("AppRules", AppRules)
+  // console.log("AppRules", AppRules)
 
   // Combine rules with "service" + "app"
   const ServiceRulesCombined = newListAttribute(AppRules, "service", "app")
-  console.log("ServiceRulesCombined", ServiceRulesCombined)
+  // console.log("ServiceRulesCombined", ServiceRulesCombined)
 
   const DadrRules = resolveTargetsfromList(ServiceRulesCombined, 'daddress')
-  console.log("Dadr-Rules", DadrRules)
+  // console.log("Dadr-Rules", DadrRules)
 
   // Resolve S-Addr
   const SadrRules = resolveTargetsfromList(DadrRules, 'saddress')
-  console.log("Sadr-Rules", SadrRules)
+  // console.log("Sadr-Rules", SadrRules)
 
 
   // Liste von Services
   const serviceNodes = getNodeList(ServiceRulesCombined, 'service.app')
-  console.log("ServiceNodes", serviceNodes)
+  // console.log("ServiceNodes", serviceNodes)
 
   // Liste von Sources
   const sourceNodes = getNodeList(SourceRulesExtracted, 'source')
-  console.log("SourceNodes", sourceNodes)
+  // console.log("SourceNodes", sourceNodes)
 
   const ipaddresses = getAdrs(SadrRules, serviceNodes)
 
-  console.log("SourceNodes(sadr-dadr)", ipaddresses)
+  // console.log("SourceNodes(sadr-dadr)", ipaddresses)
   // console.log("ServiceNodes with Addresses", serviceNodes)
 
 
   // Grid-Elemente für Matrix ermitteln
   const matrixdata = {
-    zone: Destination[0],
+    zone: zoneTarget[0],
     source: sourceNodes,
     target: serviceNodes,
     sadr: SadrRules,
@@ -429,7 +411,7 @@ function filterList(list, target, selections, NEGATION) {
   var filteredList = list
   var newList
   var newLists = []
-
+  console.log("Selection:", selections)
   selections.forEach(selection => {
     if (NEGATION) {
       filteredList = filteredList.filter(item => {
@@ -443,9 +425,11 @@ function filterList(list, target, selections, NEGATION) {
       newLists = newLists.concat(newList)
     }
   })
+  console.log("FilteredList", filteredList)
+  console.log("NewList", newList)
   return (NEGATION) ? filteredList : newLists
 }
 
 
 export { runFirewall };
-export { analyseRules}
+export { analyseRules }

@@ -12,21 +12,32 @@
 
 html {
     height: 100%;
-}
+    /* padding: 5px */
+  }
 body {
-  padding-top: 10px ; 
+  /* margin: 10px ;  */
   height: 100%;
-  padding-bottom: 10px ; 
+  /* padding-bottom: 10px ;  */
  
 }
 
-#mainContainer {
+#mainId {
   height: 95%;
-  background-color: blue;
+  /* background-color: black; */
 }
-#roomRow, #roomRow .row{
-  height: 40%;
+#navId {
+  height: 5%;
+  /* background-color: black; */
+}
+
+/* .row {
   background-color: green;
+
+} */
+
+#roomRow {
+  height: 40%;
+  /* background-color: green; */
 }
 
 #displayRow {
@@ -34,23 +45,11 @@ body {
   /* width: 50%; */
   
 }
-/* Spalten einer Zeile*/
-#leftid, #rightid, #middleid {
-  height: 100%;
-  /* width: 95%; */
-  background-color: gray;
-  border-color:#2669bf;
-  border-style: solid;
-  border-width: 0.25px;
-  
-    
-  /* padding: 5px; */
-  
-}
+
 #upperid {
   height: 100%;
   /* width: 100%; */
-  background-color:gray;
+  /* background-color:gray; */
   border-color:#2669bf;
   border-style: solid;
   border-width: 0.25px;
@@ -59,25 +58,49 @@ body {
   /* padding-right: 0px; */
 }
 
+/* Spalten einer Zeile*/
+#leftid, #rightid, #middleid {
+  height: 100%;
+  /* width: 95%; */
+  /* background-color: gray; */
+  border-color:#2669bf;
+  border-style: solid;
+  border-width: 0.25px;  
+}
+
+/* Box innerhalb der #upperid */
+
+.displayBox {
+  border: solid 0.5px;
+  /* border-color: white; */
+  /* background-color: gray; */
+  height: 100%;
+  width:100%;
+}
+
 /* Boxen innerhalb einer Spalte */
   .taskBox,
-  .contentBox,
   .detailBox {
     /* border: solid 0.5px; */
     /* border-color:#2669bf; */
     /* background-color: white; */
-    background-color:black;
+    /* background-color:rgb(7, 6, 6); */
+    /* background-color:gray; */
+    height: 100%;
+    width:100%;
+  }
+  .contentBox {
+    /* border: solid 0.5px; */
+    /* border-color:#2669bf; */
+    /* background-color: white; */
+    /* background-color:rgb(7, 6, 6); */
+    /* background-color:gray; */
     height: 100%;
     width:100%;
   }
   
-  .displayBox {
-    border: solid 0.5px;
-    /* border-color: white; */
-    background-color: gray;
-    height: 100%;
-    width:100%;
-  }
+  
+  
   
 #svgleft {
   padding: 0;
