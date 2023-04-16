@@ -101,13 +101,14 @@ body {
   
   
   
-  
-#svgleft {
+  /* Zentriert Canvas-Bereiche  */
+.canvas {
   padding: 0;
     margin: auto;
     display: block;
     width: 350px;
 }
+
 .navbar {
     /* background:#6ab446; */
     background:#2669bf;

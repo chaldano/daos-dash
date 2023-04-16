@@ -1,9 +1,11 @@
 import { requestData } from 'TkbbFolder/net/client.js';
 import { selectZones } from 'TkbbFolder/fw/fw_left.js';
+// import { resolveZones } from 'TkbbFolder/fw/fw_right.js';
 import { drawMatrix } from 'TkbbFolder/fw/fw_upper.js';
+
 // import { createTaskBox } from 'TkbbFolder/dom/html.js';
-import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
-import * as d3 from "d3";
+// import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
+// import * as d3 from "d3";
 
 function runFirewall() {
   // removeDisplayBox()
@@ -25,7 +27,8 @@ function runFirewall() {
       // Berechne Zonenliste
       const szones = getZones(arules, 'source')
       const dzones = getZones(arules, 'destination')
-
+      // resolveZones(arules, szones, dzones)
+      // resolveZones()
       selectZones(arules, szones, dzones)
     })
 }
@@ -47,6 +50,8 @@ function analyseRules(zoneSelection) {
   var matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target']) // true - extrahieren 
   matrixdata = createHash(matrixdata)
   matrixdata = createMatrix(matrixdata)
+  console.log("Initialer Matrixstatus:",matrixdata.state)
+  
   const svgtarget = drawMatrix(matrixdata)
 
   var sadr = matrixdata.sadrip
@@ -430,6 +435,88 @@ function filterList(list, target, selections, NEGATION) {
   return (NEGATION) ? filteredList : newLists
 }
 
+function drawFirewall (canvas) {
+  
+  const textdistance = "10"
+
+  const objectID = "obj"+canvas.Target
+
+  // Beschriftungsbereich und Parameter der Matrix
+  const matrixhead = 3 * canvas.Unit
+
+  const targetTid = "targetT"+objectID
+  const targetTx = canvas.BaseX + canvas.ObjWidth / 2
+  const targetTy = canvas.BaseY - matrixhead
+
+  const sourceTid = "sourceT"+objectID
+  const sourceTx = canvas.BaseX - textdistance
+  const sourceTy = canvas.BaseY
+
+  // Setze Matrix-Bereiche  
+  var can = d3.select("#" + canvas.ID)
+  can
+    .append("g")
+    .attr("transform", "translate(" + canvas.BaseX + "," + canvas.BaseY + ")")
+    .attr("id", objectID)
+
+    .append("rect")
+    .attr("class", "fwgrid")
+    .attr("width", canvas.ObjWidth)
+    .attr("height", canvas.ObjWidth)
+    .attr("x", 0)
+    .attr("y", 0)
+
+  // M1 Axen-Beschriftung
+  // Linie
+  var can = d3.select("#" + canvas.ID)
+  can
+    .append("g")
+    .attr("transform", "translate(" + targetTx + "," + targetTy + ")")
+    .attr("id", targetTid)
+
+  // M1-Service Überschrift
+  var matrixT = d3.select("#" + targetTid)
+  matrixT
+    .append("text")
+    .classed("skala", true)
+    .attr("x", canvas.Unit)
+    .attr("y", canvas.Unit / 2)
+    .attr("class", "matrixT")
+    // .text("Services of Zone: " + targetzone)
+    .text("Target Zone ")
+    .style("text-anchor", "start")
+
+  // M1-Source Überschrift
+  var sourcename = "Source Zone"
+  matrixT
+    .append("text")
+    // .classed("skala", true)
+    .attr("x", -sourcename.length - canvas.Unit / 2)
+    .attr("y", canvas.Unit / 2)
+    .attr("class", "matrixT")
+    .text(sourcename)
+    .style("text-anchor", "end")
+
+  // M1 Fw
+  var matrix1 = d3.select("#" + objectID)
+  matrix1
+    .append("line")
+    .attr("class", "fwline")
+    .attr("x1", canvas.ObjWidth / 2)
+    .attr("y1", 0 - matrixhead)
+    .attr("x2", canvas.ObjWidth / 2)
+    .attr("y2", canvas.ObjWidth + matrixhead)
+
+  // Source-Text-Bereich
+  can
+    .append("g")
+    .attr("transform", "translate(" + sourceTx + "," + sourceTy + ")")
+    .attr("id", sourceTid)
+
+    // return svgid
+}
 
 export { runFirewall };
 export { analyseRules }
+export { drawFirewall }
+// export { setCanvas }

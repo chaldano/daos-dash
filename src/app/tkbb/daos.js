@@ -12,18 +12,23 @@ export const circle = {
 }
 
 export class Canvas {
-    constructor(id, height, weight) {
+    constructor(target, width, height) {
         // this._id = "svg" + this._generateID()
-        this._id = id
         this._height = height
-        this._weight = weight
+        this._width = width
         this._baseY = 0
         this._baseX = 0
-
+        this._target = target
+        this._unit = 0
+        this._id = "svg"+target
+        
     }
         
     get ID() {
         return this._id
+    }
+    get Target() {
+        return this._target
     }
     set BaseX(x) {
         this._baseX = x
@@ -31,18 +36,31 @@ export class Canvas {
     set BaseY(y) {
         this._baseY = y
     }
+    set Unit(x) {
+        this._unit = x
+    }
+    set ObjWidth(x) {
+        this._objwidth = x
+    }
     get BaseX() {
         return this._baseX
     }
     get BaseY() {
         return this._baseY
     }
-    get Weight() {
-        return this._weight
+    get Width() {
+        return this._width
     }
     get Height() {
         return this._height
     }
+    get Unit() {
+        return this._unit
+    }
+    get ObjWidth() {
+        return this._objwidth
+    }
+
     // _generateID() {
     //     return Math.random();
     // }
@@ -127,3 +145,14 @@ export class Zone {
     }
 }
 
+export function setCanvas(canvas) {
+    // var id = canvas.ID
+    const box = d3.select('#' + canvas.Target)
+    console.log("Canvas", canvas.ID)
+    box
+      .append('svg')
+      .attr("class","canvas")
+      .attr("width", canvas.Width)
+      .attr("height", canvas.Height)
+      .attr("id", canvas.ID)
+  }

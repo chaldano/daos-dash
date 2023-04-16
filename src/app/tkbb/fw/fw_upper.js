@@ -226,6 +226,8 @@ function drawMatrix(matrixdata) {
   box.selectAll("rect.grid").on("click", gridState);
 
   function gridOver(event, d) {
+    console.log("Durch over", matrixState)
+    
     if (matrixState == "Selectable") {
       box.selectAll("rect.grid").attr("class", p => {
         if (p.x == d.x || p.y == d.y) {
@@ -240,7 +242,8 @@ function drawMatrix(matrixdata) {
       const serviceObject = targets[d.x]
       // Service Text
       const zeile = d3.select("#" + targetTid)
-      zeile.append("text")
+      zeile
+        .append("text")
         .classed("current", true)
         .classed("skala", true)
         .attr("x", d.x * rectwidth + rectwidth / 2)
@@ -286,6 +289,7 @@ function drawMatrix(matrixdata) {
 
   // States: "Selected" (einfrieren; "Selectable" (mouseover))
   function gridState(event, d) {
+    console.log("Click-jetzt:",matrixState)
     if (matrixState == "Selected") {
       // Status aufheben
       matrixState = "Selectable"

@@ -1,24 +1,12 @@
-import { requestData } from 'TkbbFolder/net/client.js';
+import * as tab from 'TkbbFolder/tables/tabbasic.js';
+import * as main from 'TkbbFolder/fw/fw_main.js';
+import * as dom from 'TkbbFolder/dom/html.js';
 
-// import { createDisplayBox } from 'TkbbFolder/dom/html.js';
-// import { createContentBox } from 'TkbbFolder/dom/html.js';
-import { createDetailBox } from 'TkbbFolder/dom/html.js';
-// import { removeDetailBox } from 'TkbbFolder/dom/html.js';
-
-import { getRowByIndex } from 'TkbbFolder/tables/tabbasic.js';
-// import { putTableHeader } from 'TkbbFolder/tables/tabbasic.js';
-// import { putTable } from 'TkbbFolder/tables/tabbasic.js';
-// import { putTableDetail } from 'TkbbFolder/tables/tabbasic.js';
-
-// import { removeAllBox } from 'TkbbFolder/dom/html.js';
 import * as d3 from "d3";
-// import { easeCircle } from 'd3';
-// import { DomElement } from 'TkbbFolder/dom/html.js';
-import * as Daos from 'TkbbFolder/daos.js';
-// import { Canvas } from '../daos';
+import * as daos from 'TkbbFolder/daos.js';
+// import { drawFirewall } from './fw_main';
 
-
-function putAdrDetail(selectedRow, tableArray, matrixdata) {
+function putAdrDetailN(selectedRow, tableArray, matrixdata) {
   console.log("Matrixdata", matrixdata)
   console.log("TableArray", tableArray)
   console.log("SelectdRow", selectedRow)
@@ -27,11 +15,11 @@ function putAdrDetail(selectedRow, tableArray, matrixdata) {
   var tabkeys = Object.keys(tableArray[0])
   var contentKey = tabkeys[0]
 
-  const targetDetail = createDetailBox()
+  const targetDetail = dom.createDetailBox()
   var selectedContent = selectedRow.find('td:eq(0)').text()
 
   // Suche ausgewählte Zeile in Tabelle      
-  var rowContent = getRowByIndex(contentKey, selectedContent, tableArray)
+  var rowContent = tab.getRowByIndex(contentKey, selectedContent, tableArray)
   console.log("RowContent", rowContent)
   
   var serviceKey = `${rowContent.source}-${rowContent.service}`
@@ -54,20 +42,83 @@ function putAdrDetail(selectedRow, tableArray, matrixdata) {
   })
   
   var zones = []
-  var sz = new Daos.Zone(rowContent.source, 'sourcezone')
+  var sz = new daos.Zone(rowContent.source, 'sourcezone')
 
-  var svc = new Daos.Zone("Service",'servicezone')
-  var tz = new Daos.Zone(matrixdata.zone,'targetzone')
+  var svc = new daos.Zone("Service",'servicezone')
+  var tz = new daos.Zone(matrixdata.zone,'targetzone')
   
   zones.push(sz)
   zones.push(svc)
   zones.push(tz)
 
   var proxy = []
-  var prx = new Daos.Proxy("PaloAlto", "10.10.1.200", rowContent.service)
+  var prx = new daos.Proxy("PaloAlto", "10.10.1.200", rowContent.service)
   proxy.push(prx)
   
-  var service = new Daos.Service(rowContent.service)
+  var service = new daos.Service(rowContent.service)
+  
+  console.log ("Targets",targets)
+  console.log ("Sources",sources)
+  console.log ("Zones",zones)
+  console.log ("Proxy",proxy)
+  // console.log ("Service",service)
+  
+  ShowAdrRelation(proxy, sources, targets, zones)
+
+}
+
+function putAdrDetail(selectedRow, tableArray, matrixdata) {
+  
+  console.log("Matrixdata", matrixdata)
+  console.log("TableArray", tableArray)
+  console.log("SelectdRow", selectedRow)
+
+  var sadrip = matrixdata.sadrip
+  var tabkeys = Object.keys(tableArray[0])
+  var contentKey = tabkeys[0]
+
+  // const target = createDetailBox()
+  // drawFirewall(target)
+
+  var selectedContent = selectedRow.find('td:eq(0)').text()
+
+  // Suche ausgewählte Zeile in Tabelle      
+  var rowContent = tab.getRowByIndex(contentKey, selectedContent, tableArray)
+  console.log("RowContent", rowContent)
+  
+  var serviceKey = `${rowContent.source}-${rowContent.service}`
+  // console.log ("Zone",rowContent.source)
+  console.log ("Service",sadrip[serviceKey])
+  
+  var targets = []
+  var sources = []
+
+  sadrip[serviceKey].dadr.forEach(adr=> {
+    var adrobj = {}
+    adrobj['adr'] = adr
+    targets.push(adrobj)
+  })
+  
+  sadrip[serviceKey].sadr.forEach(adr=> {
+    var adrobj = {}
+    adrobj['adr'] = adr
+    sources.push(adrobj)
+  })
+  
+  var zones = []
+  var sz = new daos.Zone(rowContent.source, 'sourcezone')
+  // var svc = new daos.Zone("Service",'servicezone')
+  var tz = new daos.Zone(matrixdata.zone,'targetzone')
+  
+  zones.push(sz)
+  // zones.push(svc)
+  zones.push(tz)
+
+  var proxy = []
+  var prx = new daos.Proxy("PaloAlto", "10.10.1.200", rowContent.service)
+  proxy.push(prx)
+  
+  var service = new daos.Service(rowContent.service)
   
   console.log ("Targets",targets)
   console.log ("Sources",sources)
@@ -81,100 +132,132 @@ function putAdrDetail(selectedRow, tableArray, matrixdata) {
 
 function ShowAdrRelation(proxy, sources, targets, zones) {
 
-  const targetDisplay = createDetailBox()
+  const target = dom.createDetailBox()
 
-  const svgid = "svg2"
-  const canvas = new Daos.Canvas(svgid, "500", "500")
-  canvas.BaseX = 200
-  canvas.BaseY = 60
+  const screenwidth = "350"
+  const screenheight = "300"
+  
+  const unit = 15                // Matrixelementgröße
+  const objectwidth = 12 * unit  // Matrixhome
 
-  setCanvas(canvas, targetDisplay)
+  const canvas = new daos.Canvas(target, screenwidth, screenheight)
+  canvas.BaseX = screenwidth / 2 - objectwidth / 2;
+  canvas.BaseY = screenheight / 2 - objectwidth / 2;
+  canvas.Unit = unit
+  canvas.ObjWidth = objectwidth;
 
+  
+  // Canvas einrichten
+  daos.setCanvas(canvas, target)
+  main.drawFirewall(canvas)
+  
   var par = {}
 
-  par['adrpdistance'] = 100
+  par['adrpdistance'] = canvas.ObjWidth/2
+  par['objwidth'] = canvas.ObjWidth
   par['xl'] = canvas.BaseX - par['adrpdistance'] / 2
   par['yl'] = canvas.BaseY
-  par['rl'] = 5            // Radius einer Node
-  par['dl'] = 5 * par['rl'] // Abstand zwischen Nodes = 6 * Radius
+  par['rl'] = 5                   // Radius einer Node
+  par['dl'] = 5 * par['rl']       // Abstand zwischen Nodes = 6 * Radius
   par['plength'] = proxy.length
   par['slength'] = sources.length
   par['tlength'] = targets.length
   par['zlength'] = zones.length
-  par['maxl'] = 10
-  par['twol'] = false     // false: 1 spaltig true:= 2 spaltig
+  par['maxl'] = 10                // max. Anzahl an Nodes
+  par['twol'] = false             // false: 1 spaltig true:= 2 spaltig
 
-  par['adrlength'] = 85
-
-  par['xz'] = canvas.BaseX - par['adrpdistance'] / 2 - 2 * par['rl'] - par['adrlength']
+  par['adrlength'] = 90
+  // Zonen ausrichten
+  par['xz'] = canvas.BaseX + par['adrpdistance'] / 2 - 2 * par['rl'] - par['adrlength']
   par['widthz'] = (par['adrpdistance'] + 4 * par['rl'] + 2 * par['adrlength']) / par['zlength']
   par['heightz'] = 20
   par['yz'] = canvas.BaseY - 2.5 * par['heightz']
 
   // Source-List
-  par['xl'] = canvas.BaseX - par['adrpdistance'] / 2
-
-  if (par['tlength'] > par['maxl']) {
-    var diff = (par['maxl'] - par['slength']) / 2
+  // par['xl'] = canvas.BaseX - par['adrpdistance'] / 2
+  par['xl'] = canvas.BaseX 
+  
+  console.log("Yvorher",par['yl'])
+  console.log("Yvorher",canvas.BaseY)
+  console.log("Width",par['objwidth'])
+  
+  if (par['slength'] > 1) {
+    var diff = par['slength']
+    console.log("Diff",diff)
     par['yl'] = smartY(diff, par)
+    console.log("Ynachher",par['yl'])
+  
   }
   else {
-    if (par['slength'] < par['tlength']) {
-      var diff = (par['tlength'] - par['slength']) / 2
-      par['yl'] = smartY(diff, par)
-
-    }
+      par['yl'] = canvas.BaseY + canvas.ObjWidth/2
   }
+
   setPoints(sources, 'src', par, canvas.ID)
 
   // Destination List
-  par['xl'] = canvas.BaseX + par['adrpdistance'] / 2,
+  // par['xl'] = canvas.BaseX + par['adrpdistance'] / 2,
+  par['xl'] = canvas.BaseX + canvas.ObjWidth 
   par['yl'] = canvas.BaseY
-  if (par['tlength'] > par['maxl']) {
-    par['twol'] = true
-    var targetsTwo = []
-    var targetsOne = []
-    targets.forEach((target, index) => {
-      if (index >= par['maxl']) {
-        targetsTwo.push(target)
-      }
-      else {
-        targetsOne.push(target)
-      }
-    })
-    setPoints(targetsOne, 'dst', par, canvas.ID)
-    par['xl'] = canvas.BaseX + par['adrpdistance'] / 2
-    par['yl'] = canvas.BaseY + + par['dl']/2
-    setPoints(targetsTwo, 'dst', par, canvas.ID)
-    
-    par['targetTwo'] = targetsTwo
-    par['targetOne'] = targetsOne
-
-    console.log("TargetTwo", par['targetTwo'])
-    console.log("TargetOne", par['targetOne'])
-  }
-  else {
-    setPoints(targets, 'dst', par, canvas.ID)
-  }
-  // Proxy
-  par['xl'] = canvas.BaseX,
-  par['yl'] = canvas.BaseY
-
-  if (par['twol'] == true) {
-    console.log("TwoCol")
-    var diff = (par['maxl'] - par['plength']) / 2
+  
+  if (par['tlength'] > 1) {
+    var diff = par['tlength']
     par['yl'] = smartY(diff, par)
+    // console.log("Ynachher",par['yl'])  
   }
   else {
-    if (par['slength'] < par['tlength']) {
-      var diff = (par['tlength'] - par['plength']) / 2
-      par['yl'] = smartY(diff, par)
-    }
-    else {
-      var diff = (par['slength'] - par['plength']) / 2
-      par['yl'] = smartY(diff, par)
-    }
+      par['yl'] = canvas.BaseY + canvas.ObjWidth/2
   }
+  // par['yl'] = canvas.BaseY
+  // if (par['tlength'] > par['maxl']) {
+  //   par['twol'] = true
+  //   var targetsTwo = []
+  //   var targetsOne = []
+  //   targets.forEach((target, index) => {
+  //     if (index >= par['maxl']) {
+  //       targetsTwo.push(target)
+  //     }
+  //     else {
+  //       targetsOne.push(target)
+  //     }
+  //   })
+    
+    setPoints(targets, 'dst', par, canvas.ID)
+  //   par['xl'] = canvas.BaseX + par['adrpdistance'] / 2
+  //   par['yl'] = canvas.BaseY + + par['dl']/2
+  //   setPoints(targetsTwo, 'dst', par, canvas.ID)
+    
+  //   par['targetTwo'] = targetsTwo
+  //   par['targetOne'] = targetsOne
+
+  //   console.log("TargetTwo", par['targetTwo'])
+  //   console.log("TargetOne", par['targetOne'])
+  // }
+  // else {
+  //   setPoints(targets, 'dst', par, canvas.ID)
+  // }
+  
+  
+  
+  
+  // Proxy
+  par['xl'] = canvas.BaseX + canvas.ObjWidth/2
+  par['yl'] = canvas.BaseY + canvas.ObjWidth/2
+
+  // if (par['twol'] == true) {
+  //   console.log("TwoCol")
+  //   var diff = (par['maxl'] - par['plength']) / 2
+  //   par['yl'] = smartY(diff, par)
+  // }
+  // else {
+  //   if (par['slength'] < par['tlength']) {
+  //     var diff = (par['tlength'] - par['plength']) / 2
+  //     par['yl'] = smartY(diff, par)
+  //   }
+  //   else {
+  //     var diff = (par['slength'] - par['plength']) / 2
+  //     par['yl'] = smartY(diff, par)
+  //   }
+  // }
   setPoints(proxy, 'proxy', par, canvas.ID)
   drawLink(proxy, sources, targets, par, canvas.ID)
 
@@ -187,19 +270,11 @@ function ShowAdrRelation(proxy, sources, targets, zones) {
 }
 
 function smartY(diff, par) {
-  var y = par.yl + diff * par.dl
+  // var y = (par.yl + par.objwidth/2) - ((diff-1) * par.dl + (diff-1)*par.rl)/2
+  var y = (par.yl + par.objwidth/2) - ((diff-1) * par.dl)/2
   return y
 }
 
-function setCanvas(canvas, target) {
-  var id = canvas.ID
-  const box = d3.select('#' + target)
-  box
-    .append('svg')
-    .attr("width", canvas.Weight)
-    .attr("height", canvas.Height)
-    .attr("id", id)
-}
 
 
 function setPoints(plist, pointtype, par, target) {
@@ -372,5 +447,14 @@ function drawLink(proxy, sources, targets, par, targetid) {
   // .attr("transform", (d) => { return "translate(" + d.cx + "," + d.cy + ") rotate(90)"})
 
 }
+
+// function resolveZones(rules, szones, dzones) {
+function resolveZones() {
+  const target = dom.createDetailBox()
+  // drawFirewall(target)
+}
+
 // export { ShowAdrRelation };
 export { putAdrDetail }
+export { putAdrDetailN }
+export { resolveZones }
