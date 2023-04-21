@@ -382,18 +382,18 @@ function createPage() {
 
   // ADD LEFT Display-Windows
   const Left = new DomElement({ targetid: 'roomRow', ownid: 'leftid', type: 'div' })
-  Left.addClass('col-4')
+  Left.addClass('col-3')
   // Left.addClass('text-white')
   Left.addClass('p-1')
   
   const Middle = new DomElement({ targetid: 'roomRow', ownid: 'middleid', type: 'div' })
-  Middle.addClass('col-4')
+  Middle.addClass('col-3')
   // Middle.addClass('text-white')
   Middle.addClass('p-1')
   
   // ADD RIGHT Windows
   const Right = new DomElement({ targetid: 'roomRow', ownid: 'rightid', type: 'div' })
-  Right.addClass('col-4')
+  Right.addClass('col-6')
   // Right.addClass('text-white')
   
   //TaskBox in Left verlinken

@@ -1,3 +1,5 @@
+// Objektklassen 
+
 export const coordinates = {
     xd: 0,
     yd: 0,
@@ -11,6 +13,7 @@ export const circle = {
     yr: 0
 }
 
+// Canvas: Klasse zur Steuerung von Anzeigebereichen
 export class Canvas {
     constructor(target, width, height) {
         // this._id = "svg" + this._generateID()
@@ -66,6 +69,7 @@ export class Canvas {
     // }
 }
 
+// Klasse für einen Raum
 export class Daos {
     constructor(name) {
         this.dname = name
@@ -134,8 +138,9 @@ export class Zone {
         this._name = name,
         this._class = type
         this._geo = 'rect'
-        this._width   = 10
+        this._width   = 20
         this._height  = 10
+        this._test = 5
     }
     get Name() {
         return this._name
@@ -143,7 +148,12 @@ export class Zone {
     get Class() {
         return this._class
     }
+    set Width(x) {
+        this._width = x
+    }
 }
+
+// Funktion zum Anlegen einer Canvas
 
 export function setCanvas(canvas) {
     // var id = canvas.ID

@@ -505,7 +505,7 @@ function drawFirewall (canvas) {
     .attr("x1", canvas.ObjWidth / 2)
     .attr("y1", 0 - matrixhead)
     .attr("x2", canvas.ObjWidth / 2)
-    .attr("y2", canvas.ObjWidth + matrixhead)
+    .attr("y2", canvas.ObjWidth + matrixhead/2)
 
   // Source-Text-Bereich
   can

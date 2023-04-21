@@ -4,68 +4,9 @@ import * as dom from 'TkbbFolder/dom/html.js';
 
 import * as d3 from "d3";
 import * as daos from 'TkbbFolder/daos.js';
+import { max } from 'd3';
 // import { drawFirewall } from './fw_main';
 
-function putAdrDetailN(selectedRow, tableArray, matrixdata) {
-  console.log("Matrixdata", matrixdata)
-  console.log("TableArray", tableArray)
-  console.log("SelectdRow", selectedRow)
-
-  var sadrip = matrixdata.sadrip
-  var tabkeys = Object.keys(tableArray[0])
-  var contentKey = tabkeys[0]
-
-  const targetDetail = dom.createDetailBox()
-  var selectedContent = selectedRow.find('td:eq(0)').text()
-
-  // Suche ausgewählte Zeile in Tabelle      
-  var rowContent = tab.getRowByIndex(contentKey, selectedContent, tableArray)
-  console.log("RowContent", rowContent)
-  
-  var serviceKey = `${rowContent.source}-${rowContent.service}`
-  // console.log ("Zone",rowContent.source)
-  console.log ("Service",sadrip[serviceKey])
-  
-  var targets = []
-  var sources = []
-
-  sadrip[serviceKey].dadr.forEach(adr=> {
-    var adrobj = {}
-    adrobj['adr'] = adr
-    targets.push(adrobj)
-  })
-  
-  sadrip[serviceKey].sadr.forEach(adr=> {
-    var adrobj = {}
-    adrobj['adr'] = adr
-    sources.push(adrobj)
-  })
-  
-  var zones = []
-  var sz = new daos.Zone(rowContent.source, 'sourcezone')
-
-  var svc = new daos.Zone("Service",'servicezone')
-  var tz = new daos.Zone(matrixdata.zone,'targetzone')
-  
-  zones.push(sz)
-  zones.push(svc)
-  zones.push(tz)
-
-  var proxy = []
-  var prx = new daos.Proxy("PaloAlto", "10.10.1.200", rowContent.service)
-  proxy.push(prx)
-  
-  var service = new daos.Service(rowContent.service)
-  
-  console.log ("Targets",targets)
-  console.log ("Sources",sources)
-  console.log ("Zones",zones)
-  console.log ("Proxy",proxy)
-  // console.log ("Service",service)
-  
-  ShowAdrRelation(proxy, sources, targets, zones)
-
-}
 
 function putAdrDetail(selectedRow, tableArray, matrixdata) {
   
@@ -107,8 +48,11 @@ function putAdrDetail(selectedRow, tableArray, matrixdata) {
   
   var zones = []
   var sz = new daos.Zone(rowContent.source, 'sourcezone')
-  // var svc = new daos.Zone("Service",'servicezone')
+  // console.log("SZ1",sz)
+  
   var tz = new daos.Zone(matrixdata.zone,'targetzone')
+  // console.log("TZ1",tz)
+  
   
   zones.push(sz)
   // zones.push(svc)
@@ -153,28 +97,34 @@ function ShowAdrRelation(proxy, sources, targets, zones) {
   
   var par = {}
 
-  par['adrpdistance'] = canvas.ObjWidth/2
+  // par['adrpdistance'] = canvas.ObjWidth/2
   par['objwidth'] = canvas.ObjWidth
-  par['xl'] = canvas.BaseX - par['adrpdistance'] / 2
-  par['yl'] = canvas.BaseY
   par['rl'] = 5                   // Radius einer Node
   par['dl'] = 5 * par['rl']       // Abstand zwischen Nodes = 6 * Radius
   par['plength'] = proxy.length
   par['slength'] = sources.length
   par['tlength'] = targets.length
   par['zlength'] = zones.length
-  par['maxl'] = 10                // max. Anzahl an Nodes
-  par['twol'] = false             // false: 1 spaltig true:= 2 spaltig
+  par['maxl'] = 10             // max. Anzahl an Nodes
+  // Anzeige Header 
+  par['header'] = 13                                     // Max. Anzahl Zeichen im Header
+  // par['charlength'] = canvas.ObjWidth/par['header']      // Pixel pro Zeichen
+  par['charlength'] =       6.92
+  
+  par['twol'] = false     // false: 1 spaltig true:= 2 spaltig
 
-  par['adrlength'] = 90
   // Zonen ausrichten
-  par['xz'] = canvas.BaseX + par['adrpdistance'] / 2 - 2 * par['rl'] - par['adrlength']
-  par['widthz'] = (par['adrpdistance'] + 4 * par['rl'] + 2 * par['adrlength']) / par['zlength']
-  par['heightz'] = 20
-  par['yz'] = canvas.BaseY - 2.5 * par['heightz']
+
+  par['xl'] = canvas.BaseX - canvas.ObjWidth/2 / 2
+  par['yl'] = canvas.BaseY
+  par['heightz']  = 20
+  par['yz'] = canvas.BaseY - par['heightz']
+  // Länge für Zonennamen anpassen
+  
+  
+
 
   // Source-List
-  // par['xl'] = canvas.BaseX - par['adrpdistance'] / 2
   par['xl'] = canvas.BaseX 
   
   console.log("Yvorher",par['yl'])
@@ -195,7 +145,6 @@ function ShowAdrRelation(proxy, sources, targets, zones) {
   setPoints(sources, 'src', par, canvas.ID)
 
   // Destination List
-  // par['xl'] = canvas.BaseX + par['adrpdistance'] / 2,
   par['xl'] = canvas.BaseX + canvas.ObjWidth 
   par['yl'] = canvas.BaseY
   
@@ -242,7 +191,8 @@ function ShowAdrRelation(proxy, sources, targets, zones) {
   // Proxy
   par['xl'] = canvas.BaseX + canvas.ObjWidth/2
   par['yl'] = canvas.BaseY + canvas.ObjWidth/2
-
+  par['objwidth'] = canvas.ObjWidth
+  
   // if (par['twol'] == true) {
   //   console.log("TwoCol")
   //   var diff = (par['maxl'] - par['plength']) / 2
@@ -262,8 +212,35 @@ function ShowAdrRelation(proxy, sources, targets, zones) {
   drawLink(proxy, sources, targets, par, canvas.ID)
 
   zones.forEach(zone => {
-    console.log("Zone", zone.Name)
+    console.log("Zone", zone)
   })
+
+  // Anzeige ausgewählter Zonen
+  // console.log("Zones2",zones)
+  par['xl'] = canvas.BaseX
+  par['objwidth'] = canvas.ObjWidth
+  
+  var sz = zones[0].Name
+  console.log("SZ:", sz +":"+ sz.length)
+  var tz = zones[1].Name
+  console.log("TZ:", tz +":"+tz.length)
+  console.log("ObjWidth:", canvas.ObjWidth)
+
+  zones[0].Width = canvas.ObjWidth/2
+  zones[1].Width = canvas.ObjWidth/2
+  
+  if ((canvas.ObjWidth/2 / sz.length < par['charlength']) || ((canvas.ObjWidth/2 / tz.length < par['charlength'])) ) {
+    var max = sz.length > tz.length ? sz.length : tz.length 
+    console.log("Max:", max)
+    console.log("Width:", canvas.ObjWidth/2)
+    
+    // var diff = (max-par['zeichenbreite']) * par['zeichenbreite']
+    var diff = (max-par['header']) * par['charlength']
+    
+    // Verschiebung der x-Koordinate
+    par['xl'] = par['xl'] - diff
+    par['objwidth'] = canvas.ObjWidth + 2 * diff
+  }
 
   setZones(zones, par, canvas.ID)
 
@@ -309,18 +286,18 @@ function setPoints(plist, pointtype, par, target) {
 
 // Setze vertikale Zonen
 function setZones(zlist, par, target) {
+  console.log("ZList",zlist)
   var zone = d3.select("#" + target)
   zone
     .append("g")
     .selectAll("rect")
     .data(zlist)
-    // .join('circle')
     .enter()
     .append("rect")
     .attr("id", (d) => { return d.Name })
     .attr("class", (d) => { return d.Class })
     .attr("x", (d, i) => {
-      d['x'] = par.xz + i * par.widthz
+      d['x'] = par.xl + i * par['objwidth']/2
       return d['x']
     })
     .attr("y", (d, i) => {
@@ -328,7 +305,7 @@ function setZones(zlist, par, target) {
       return d['y']
     })
     .attr("width", d => {
-      d['width'] = par.widthz
+      d['width'] = par['objwidth']/2
       return d['width']
     })
     .attr("height", (d, i) => {
@@ -343,14 +320,12 @@ function setZones(zlist, par, target) {
     // .join('circle')
     .enter()
     .append("text")
-    // .join("text")
     .text((d) => d.Name)
-    .attr("x", (d) => { return (d.x + d.width / 5) })
+    .attr("x", (d) => { return (d.x + d.width / 2) })
     .attr("y", (d) => { return (d.y + d.height * 2 / 3) })
     .classed("zone", true)
-    // .attr("class", (d) => { return d.Name})
     .style("fill", "white")
-    .style("text-anchor", "start")
+    .style("text-anchor", "middle")
 
 
 
@@ -439,10 +414,19 @@ function drawLink(proxy, sources, targets, par, targetid) {
     // .text((d) => { return d.Name+"("+d.Service+")" })
     .text((d) => { return d.Service })
     .attr("x", (d) => { return d.cx })
-    .attr("y", (d) => { return d.cy + 3 * par.dl })
+    // .attr("y", (d) => { return d.cy + 3 * par.dl })
+    .attr("y", (d) => { 
+      // console.log("Cy",d.cy)
+      console.log("Längen:",par.objwidth)
+      // console.log("DL:",3*par.dl)
+      return d.cy + par.objwidth/1.5
+    })
+    
     .classed("zone", true)
     .style("fill", "white")
-    .style("text-anchor", "end")
+    // .style("opacity", 0.5)
+    .style("background", "blue")
+    .style("text-anchor", "middle")
   // .style("writing-mode", "horizontal-tb") // from Top to Bottom
   // .attr("transform", (d) => { return "translate(" + d.cx + "," + d.cy + ") rotate(90)"})
 
@@ -456,5 +440,5 @@ function resolveZones() {
 
 // export { ShowAdrRelation };
 export { putAdrDetail }
-export { putAdrDetailN }
+// export { putAdrDetailN }
 export { resolveZones }
