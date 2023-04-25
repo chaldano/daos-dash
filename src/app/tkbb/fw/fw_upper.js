@@ -4,34 +4,13 @@ import { removeTable } from 'TkbbFolder/fw/fw_middle.js';
 import * as d3 from "d3";
 
 function drawMatrix(matrixdata) {
-  // console.log("DisplayTarget", target)
   const target = createDisplayBox()
   
   var sources = matrixdata.source
   var targets = matrixdata.target
   var matrix = matrixdata.matrix
 
-  // console.log("Targets", targets)
-
-  // var relationhash = matrixdata.rhash
-  // const matrix = [];
   var matrixState = matrixdata.state;
-
-
-  var targetGroup = [
-    { "id": 0, "value": "Trust" },
-    { "id": 1, "value": "DMZ" },
-    { "id": 2, "value": "DMZ_PUBLIC" },
-    { "id": 3, "value": "ANY" },
-    { "id": 4, "value": "HAECKER-IT-LAB" }
-  ]
-  var sourceGroup = [
-    { "id": 0, "value": "SA" },
-    { "id": 1, "value": "SB" },
-    { "id": 2, "value": "SC" },
-    { "id": 3, "value": "SD" },
-    { "id": 4, "value": "SE" }
-  ]
 
   console.log("Matrix", matrixdata.matrix)
 
@@ -40,9 +19,9 @@ function drawMatrix(matrixdata) {
   const textdistance = "10"
 
   const baseX = 150;
-  const offsetX = 0;
+  // const offsetX = 0;
   const baseY = 50;
-  const offsetY = 0;
+  // const offsetY = 0;
 
   const svgid = "svgupper"
 
@@ -58,30 +37,19 @@ function drawMatrix(matrixdata) {
   const matrixTx = matrixX - matrixhead
   const matrixTy = matrixY - matrixhead
 
-  const strokewidthMax = "4px"
-  const strokewidthMin = "1px"
+  // const strokewidthMax = "4px"
+  // const strokewidthMin = "1px"
 
   // Konstante als Text- und Buttonbereiche (Source-Target)
   // Target
   var targetzone = matrixdata.zone
-  const tButtonid = "tButtonID"
-  const tButtonX = matrixX + targets.length * rectwidth - (targetGroup.length + 1) * rectwidth
-  const tButtonY = matrixTy
-
-  const tButtonTid = "tButtonTextID"
-  // const tButtonTx = tButtonX+rectwidth/2
-  const tButtonTx = tButtonX + rectwidth
-  const tButtonTy = tButtonY - textdistance
-
-
-  // var serviceSkala = (targets.length * rectwidth + matrixhead) - targetGroup.length * rectwidth
   const targetTid = "tTextID"
   const targetTx = matrixX
   const targetTy = matrixY - textdistance
 
 
   // Source
-  const sButtonid = "sButtonID"
+  // const sButtonid = "sButtonID"
   // const sButtonX
   // const sButtonY
 
@@ -109,7 +77,6 @@ function drawMatrix(matrixdata) {
   var canvas = d3.select("#" + svgid)
   canvas
     .append("g")
-    // .attr("transform", "translate("+baseX+","+baseY+")")
     .attr("transform", "translate(" + matrixX + "," + matrixY + ")")
     .attr("id", matrixid)
 
@@ -126,7 +93,6 @@ function drawMatrix(matrixdata) {
 
 
   // Setze Matrix Axen-Beschriftung
-  // var canvas = d3.select("#" + svgid)
   canvas
     .append("g")
     .attr("transform", "translate(" + matrixTx + "," + matrixTy + ")")
@@ -137,18 +103,6 @@ function drawMatrix(matrixdata) {
     .attr("y1", 0)
     .attr("x2", matrixhead)
     .attr("y2", matrixhead)
-
-  // tButton-Bereich  
-  canvas
-    .append("g")
-    .attr("transform", "translate(" + tButtonX + "," + tButtonY + ")")
-    .attr("id", tButtonid)
-
-  // tButton-Textbereich
-  canvas
-    .append("g")
-    .attr("transform", "translate(" + tButtonTx + "," + tButtonTy + ")")
-    .attr("id", tButtonTid)
 
   // Source-Text-Bereich
   canvas
@@ -162,11 +116,6 @@ function drawMatrix(matrixdata) {
     .attr("transform", "translate(" + targetTx + "," + targetTy + ")")
     .attr("id", targetTid)
 
-  // Matrix-T-Bereich
-  // canvas = d3.select("#" + matrixTid)
-  // var serviceSkala = (targets.length * rectwidth + matrixhead) - targetGroup.length * rectwidth
-
-
   // Service Überschrift einfügen
   var matrixT = d3.select("#" + matrixTid)
   matrixT
@@ -174,9 +123,7 @@ function drawMatrix(matrixdata) {
     .classed("matrixT", true)
     .attr("x", rectwidth)
     .attr("y", rectwidth / 2)
-    // .style("color", "bs-white")
     .text("Services of Zone: " + targetzone)
-  // .style("text-anchor", "start")
 
   // Source Überschrift
   matrixT
@@ -187,27 +134,7 @@ function drawMatrix(matrixdata) {
     .text("Sources To")
     .style("text-anchor", "end")
 
-
-  // Target Button-Leiste
-  // var tButton = d3.select("#" + tButtonid)
-  // tButton
-  //   .selectAll("circle.cout")
-  //   .data(targetGroup)
-  //   .enter()
-  //   .append('circle')
-  //   .classed("cout", true)
-  //   .classed("targetcircle", true)
-  //   .attr("cx", (d, i) => { return rectwidth + i * rectwidth + rectwidth / 2 })
-  //   .attr("cy", 0.5)
-  //   .attr("id", (d, i) => { return "cb" + i })
-  //   .attr("r", rectwidth / 2)
-
-  //   .on('click', tButtonClick)
-  //   .on('mouseover', tButtonOver)
-  //   .on('mouseout', tButtonOut)
-
-
-  // Hier wird der Source-Text angezeigt
+  // Source-Text angezeigen
   var sourceT = d3.select("#" + sourceTid)
   sourceT
     // .append("g")

@@ -8,29 +8,19 @@ import { max } from 'd3';
 // import { drawFirewall } from './fw_main';
 
 
-function putAdrDetail(selectedRow, tableArray, matrixdata) {
+export function prepareZoneDetail(selectedRow, tableArray, matrixdata) {
   
-  console.log("Matrixdata", matrixdata)
-  console.log("TableArray", tableArray)
-  console.log("SelectdRow", selectedRow)
 
   var sadrip = matrixdata.sadrip
   var tabkeys = Object.keys(tableArray[0])
   var contentKey = tabkeys[0]
 
-  // const target = createDetailBox()
-  // drawFirewall(target)
-
   var selectedContent = selectedRow.find('td:eq(0)').text()
 
   // Suche ausgewählte Zeile in Tabelle      
   var rowContent = tab.getRowByIndex(contentKey, selectedContent, tableArray)
-  console.log("RowContent", rowContent)
   
   var serviceKey = `${rowContent.source}-${rowContent.service}`
-  // console.log ("Zone",rowContent.source)
-  console.log ("Service",sadrip[serviceKey])
-  
   var targets = []
   var sources = []
 
@@ -47,15 +37,9 @@ function putAdrDetail(selectedRow, tableArray, matrixdata) {
   })
   
   var zones = []
-  var sz = new daos.Zone(rowContent.source, 'sourcezone')
-  // console.log("SZ1",sz)
-  
+  var sz = new daos.Zone(rowContent.source, 'sourcezone')  
   var tz = new daos.Zone(matrixdata.zone,'targetzone')
-  // console.log("TZ1",tz)
-  
-  
   zones.push(sz)
-  // zones.push(svc)
   zones.push(tz)
 
   var proxy = []
@@ -64,17 +48,11 @@ function putAdrDetail(selectedRow, tableArray, matrixdata) {
   
   var service = new daos.Service(rowContent.service)
   
-  console.log ("Targets",targets)
-  console.log ("Sources",sources)
-  console.log ("Zones",zones)
-  console.log ("Proxy",proxy)
-  // console.log ("Service",service)
-  
-  ShowAdrRelation(proxy, sources, targets, zones)
+  showZoneDetail(proxy, sources, targets, zones)
 
 }
 
-function ShowAdrRelation(proxy, sources, targets, zones) {
+function showZoneDetail(proxy, sources, targets, zones) {
 
   const target = dom.createDetailBox()
 
@@ -105,7 +83,7 @@ function ShowAdrRelation(proxy, sources, targets, zones) {
   par['slength'] = sources.length
   par['tlength'] = targets.length
   par['zlength'] = zones.length
-  par['maxl'] = 10             // max. Anzahl an Nodes
+  par['maxl'] = 9             // max. Anzahl an Nodes
   // Anzeige Header 
   par['header'] = 13                                     // Max. Anzahl Zeichen im Header
   // par['charlength'] = canvas.ObjWidth/par['header']      // Pixel pro Zeichen
@@ -438,7 +416,4 @@ function resolveZones() {
   // drawFirewall(target)
 }
 
-// export { ShowAdrRelation };
-export { putAdrDetail }
-// export { putAdrDetailN }
 export { resolveZones }

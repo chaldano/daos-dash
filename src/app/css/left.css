@@ -1,10 +1,9 @@
 /* Auswahl der Zone */
 /* Spalten einer Zeile*/
-/* .sourceZone {
-  top: 100px;
-  position: relative;
-  left: 20px;
-} */
+#selectSZone,#selectTZone {
+  font-size: 8px;
+}
+
 /* #frame {
   border: solid 0.5px;
   border-color: red;

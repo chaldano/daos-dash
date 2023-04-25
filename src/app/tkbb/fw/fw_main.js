@@ -34,41 +34,15 @@ function runFirewall() {
 }
 
 function analyseRules(zoneSelection) {
-  // var zoneSelection=initZoneSelection(szones, dzones)
-  console.log(zoneSelection['rules'])
-  console.log(zoneSelection['source'])
-  console.log(zoneSelection['target'])
-
+  
   var rules = zoneSelection['rules']
-
-  var allDestinations = getDestinations(rules)
-  console.log("AllDestinations", allDestinations)
-  var allSources = getSources(rules)
-  console.log("AllSources", allSources)
 
   // Auflösung von Mehrfachnennung von Source und Target ) 
   var matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target']) // true - extrahieren 
   matrixdata = createHash(matrixdata)
   matrixdata = createMatrix(matrixdata)
-  console.log("Initialer Matrixstatus:",matrixdata.state)
   
   const svgtarget = drawMatrix(matrixdata)
-
-  var sadr = matrixdata.sadrip
-  console.log("SADR", sadr)
-}
-
-// Zeigt initialisierte Liste an
-function ShowRules(rules) {
-  var fwList = setupFwList(rules)
-  console.log("SourceZones")
-  fwList.forEach(rule => {
-    console.log(rule.source)
-  })
-  console.log("DestinationZones")
-  fwList.forEach(rule => {
-    console.log(rule.destination)
-  })
 }
 
 // Schreibt fwList um
@@ -108,76 +82,14 @@ function getZones(rules, zone) {
   return zonelist
 }
 
-function resolveRules(rules) {
-
-  var allDestinations = getDestinations(rules)
-  console.log("AllDestinations", allDestinations)
-  var allSources = getSources(rules)
-  console.log("AllSources", allSources)
-
-  // const ExcludedSources = ["DMZ", "DMZ_PUBLIC", "SSL-VPN", "SITE2SITE"]
-  // const Destinations = ["TRUST"]
-  // var matrixdata = extractData(rules, ExcludedSources, Destinations, true) // true - extrahieren 
-  // matrixdata = createHash(matrixdata)
-  // matrixdata = createMatrix(matrixdata)
-
-  // var sadr = matrixdata.sadrip
-  // console.log("SADR",sadr)
-
-  // showTable(matrixdata)
-
-
-
-
-}
-
-// Löst Rgeln nach Destinations auf
-function getDestinations(rules) {
-
-  // var fwList = setupFwList(rules)
-  var resolvedDestination = resolveTargetsfromList(rules, 'destination')
-  const destinations = getNodeList(resolvedDestination, 'destination')
-  return destinations
-}
-// Löst Regeln nach Sources auf
-function getSources(rules) {
-  // var fwList = setupFwList(rules)
-  var resolvedSources = resolveTargetsfromList(rules, 'source')
-  const sources = getNodeList(resolvedSources, 'source')
-  console.log("Sources", sources)
-  return sources
-}
 // Extrahiert Regeln auf Grundlage von Zonen
 function extractData(rules, zoneSource, zoneTarget) {
-  // console.log("Exludes", exSources)
-
-  // Initialisiere Firewallliste
-  // var fwList = setupFwList(rules)
-  // console.log("FwRules", fwList)
-
-  // DISABLE RULE EXTRAHIEREN
-  // var selection = ["[DISABLED]  ALLOW"]
-  // var DisabledRules = filterList(rules, "action", selection, false); // DISABLE filtern
-  // console.log("DisabledRules", DisabledRules)
-
-  // var AllowedRules = filterList(rules, "action", selection, true); // DISABLE extrahieren
-  // console.log("AllowedRules", AllowedRules)
-
-  // (1) Alle Regeln nach zoneTarget aufschlüsseln
-
+  
   // Auflösen von zoneTarget
   var resolvedDestination = resolveTargetsfromList(rules, 'destination')
-  // console.log("DestinationRules", resolvedDestination)
-
-  // Zielzone (Destination) aus Destination filtern
-  // console.log("Filter: ", zoneTarget)
   var DestinationRules = filterList(resolvedDestination, "destination", zoneTarget, false); // false: nur destination filtern
-  // console.log("TrustRules", DestinationRules)
-
-  // Auflösen von Source für DestinationRules
   var SourceRules = resolveTargetsfromList(DestinationRules, 'source')
-  // console.log("SourceRules", SourceRules)
-
+  
   if (zoneSource == "*") {
     // Exclude Regeln ?
     var SourceRulesExtracted = SourceRules
@@ -197,38 +109,18 @@ function extractData(rules, zoneSource, zoneTarget) {
 
   //SERVICE Rules aus SourceRules
   var ServiceRules = resolveTargetsfromList(SourceRulesExtracted, 'service')
-  // console.log("ServiceRules", ServiceRules)
-
+  
   const AppRules = resolveTargetsfromList(ServiceRules, 'app')
-  // console.log("AppRules", AppRules)
-
+  
   // Combine rules with "service" + "app"
   const ServiceRulesCombined = newListAttribute(AppRules, "service", "app")
-  // console.log("ServiceRulesCombined", ServiceRulesCombined)
-
   const DadrRules = resolveTargetsfromList(ServiceRulesCombined, 'daddress')
-  // console.log("Dadr-Rules", DadrRules)
-
-  // Resolve S-Addr
   const SadrRules = resolveTargetsfromList(DadrRules, 'saddress')
-  // console.log("Sadr-Rules", SadrRules)
-
-
-  // Liste von Services
   const serviceNodes = getNodeList(ServiceRulesCombined, 'service.app')
-  // console.log("ServiceNodes", serviceNodes)
-
-  // Liste von Sources
   const sourceNodes = getNodeList(SourceRulesExtracted, 'source')
-  // console.log("SourceNodes", sourceNodes)
-
+  
   const ipaddresses = getAdrs(SadrRules, serviceNodes)
 
-  // console.log("SourceNodes(sadr-dadr)", ipaddresses)
-  // console.log("ServiceNodes with Addresses", serviceNodes)
-
-
-  // Grid-Elemente für Matrix ermitteln
   const matrixdata = {
     zone: zoneTarget[0],
     source: sourceNodes,
@@ -519,4 +411,3 @@ function drawFirewall (canvas) {
 export { runFirewall };
 export { analyseRules }
 export { drawFirewall }
-// export { setCanvas }

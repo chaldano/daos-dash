@@ -5,7 +5,7 @@ import { createTable }      from 'TkbbFolder/tables/tabbasic.js';
 import { putTable }         from 'TkbbFolder/tables/tabbasic.js';
 import { putTableHeader }   from 'TkbbFolder/tables/tabbasic.js';
 
-import { putAdrDetail }     from 'TkbbFolder/fw/fw_right.js';
+import { prepareZoneDetail }     from 'TkbbFolder/fw/fw_right.js';
 
 function removeTable(matrixdata) {
   // const targetContent = createContentBox()
@@ -58,7 +58,7 @@ function showTableSource(matrixdata, selectedSourceIndex) {
   putTable(tabID, tableSelection, tablerules);
 
   $('tbody tr').click(function () {
-    putAdrDetail($(this), tablerules, matrixdata)
+    prepareZoneDetail($(this), tablerules, matrixdata)
   })
 }
 
