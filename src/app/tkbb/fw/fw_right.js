@@ -56,25 +56,25 @@ function showZoneDetail(proxy, sources, targets, zones) {
 
   const target = dom.createDetailBox()
 
-  const screenwidth = "350"
+  const screenwidth = "650"
   const screenheight = "300"
   
   const unit = 15                // Matrixelementgröße
   const objectwidth = 12 * unit  // Matrixhome
 
+  // Canvas Umgebung definieren
   const canvas = new daos.Canvas(target, screenwidth, screenheight)
   canvas.BaseX = screenwidth / 2 - objectwidth / 2;
   canvas.BaseY = screenheight / 2 - objectwidth / 2;
   canvas.Unit = unit
   canvas.ObjWidth = objectwidth;
 
-  
   // Canvas einrichten
   daos.setCanvas(canvas, target)
   main.drawFirewall(canvas)
   
+  // Paramterobjekt anlegen
   var par = {}
-
   // par['adrpdistance'] = canvas.ObjWidth/2
   par['objwidth'] = canvas.ObjWidth
   par['rl'] = 5                   // Radius einer Node
@@ -103,17 +103,11 @@ function showZoneDetail(proxy, sources, targets, zones) {
 
 
   // Source-List
-  par['xl'] = canvas.BaseX 
-  
-  console.log("Yvorher",par['yl'])
-  console.log("Yvorher",canvas.BaseY)
-  console.log("Width",par['objwidth'])
+  par['xl'] = canvas.BaseX - par['rl']
   
   if (par['slength'] > 1) {
     var diff = par['slength']
-    console.log("Diff",diff)
     par['yl'] = smartY(diff, par)
-    console.log("Ynachher",par['yl'])
   
   }
   else {
@@ -123,13 +117,12 @@ function showZoneDetail(proxy, sources, targets, zones) {
   setPoints(sources, 'src', par, canvas.ID)
 
   // Destination List
-  par['xl'] = canvas.BaseX + canvas.ObjWidth 
+  par['xl'] = canvas.BaseX + canvas.ObjWidth + par['rl'] 
   par['yl'] = canvas.BaseY
   
   if (par['tlength'] > 1) {
     var diff = par['tlength']
-    par['yl'] = smartY(diff, par)
-    // console.log("Ynachher",par['yl'])  
+    par['yl'] = smartY(diff, par)  
   }
   else {
       par['yl'] = canvas.BaseY + canvas.ObjWidth/2

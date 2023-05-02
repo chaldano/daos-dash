@@ -1,10 +1,13 @@
-import { createDisplayBox } from 'TkbbFolder/dom/html.js';
+// import { createDisplayBox } from 'TkbbFolder/dom/html.js';
 import { showTableSource } from 'TkbbFolder/fw/fw_middle.js';
 import { removeTable } from 'TkbbFolder/fw/fw_middle.js';
+import * as dom from 'TkbbFolder/dom/html.js';
+import * as daos from 'TkbbFolder/daos.js';
+
 import * as d3 from "d3";
 
 function drawMatrix(matrixdata) {
-  const target = createDisplayBox()
+  const target = dom.createDisplayBox()
   
   var sources = matrixdata.source
   var targets = matrixdata.target
@@ -15,19 +18,31 @@ function drawMatrix(matrixdata) {
   console.log("Matrix", matrixdata.matrix)
 
   const screenwidth = "1300"
-  const screenheight = "700"
+  const screenheight = "350"
+  const unit = 15                // Matrixelementgröße
+  
+  // Canvas Umgebung einrichten
+  const canvas = new daos.Canvas(target, screenwidth, screenheight)
+  canvas.BaseX = 150;
+  canvas.BaseY =  50;
+  canvas.Unit = unit
+  
+  // Canvas anlegen
+  daos.setCanvas(canvas, target)
+  // canvas.ObjWidth = objectwidth;
+
   const textdistance = "10"
 
-  const baseX = 150;
+  // const baseX = 150;
   // const offsetX = 0;
-  const baseY = 50;
+  // const baseY = 50;
   // const offsetY = 0;
 
-  const svgid = "svgupper"
+  // const svgid = "svgupper"
 
   // Matrixbereich
-  const matrixX = baseX
-  const matrixY = baseY
+  const matrixX = canvas.BaseX
+  const matrixY = canvas.BaseY
   const rectwidth = 15            // Matrixelementgröße
 
   // Beschriftungsbereich und Parameter der Matrix
@@ -64,18 +79,17 @@ function drawMatrix(matrixdata) {
 
 
 
-
   // Setze SVG-Box
-  const box = d3.select('#' + target)
-  box
-    .append('svg')
-    .attr("width", screenwidth)
-    .attr("height", screenheight)
-    .attr("id", svgid)
+  // const box = d3.select('#' + target)
+  // box
+  //   .append('svg')
+  //   .attr("width", screenwidth)
+  //   .attr("height", screenheight)
+  //   .attr("id", svgid)
 
   // Setze Matrix-Bereich  
-  var canvas = d3.select("#" + svgid)
-  canvas
+  var sel = d3.select("#" + canvas.ID)
+  sel
     .append("g")
     .attr("transform", "translate(" + matrixX + "," + matrixY + ")")
     .attr("id", matrixid)
@@ -93,7 +107,7 @@ function drawMatrix(matrixdata) {
 
 
   // Setze Matrix Axen-Beschriftung
-  canvas
+  sel
     .append("g")
     .attr("transform", "translate(" + matrixTx + "," + matrixTy + ")")
     .attr("id", matrixTid)
@@ -105,13 +119,13 @@ function drawMatrix(matrixdata) {
     .attr("y2", matrixhead)
 
   // Source-Text-Bereich
-  canvas
+  sel
     .append("g")
     .attr("transform", "translate(" + sourceTx + "," + sourceTy + ")")
     .attr("id", sourceTid)
 
   // Service-Text-Bereich
-  canvas
+  sel
     .append("g")
     .attr("transform", "translate(" + targetTx + "," + targetTy + ")")
     .attr("id", targetTid)
@@ -147,7 +161,8 @@ function drawMatrix(matrixdata) {
     .attr("y", (d, i) => i * rectwidth + rectwidth / 2)
     .text(d => d.source)
     .style("text-anchor", "end");
-
+  
+  const box = d3.select('#' + target)
   box.selectAll("rect.grid").on("mouseover", gridOver);
   box.selectAll("rect.grid").on("mouseout", gridOut);
   box.selectAll("rect.grid").on("click", gridState);
