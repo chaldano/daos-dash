@@ -1,8 +1,15 @@
 /* Auswahl der Zone */
 /* Spalten einer Zeile*/
-#selectSZone,#selectTZone {
+/* #selectSZone,#selectTZone,#selectHost {
   font-size: 8px;
+} */
+select {
+  font-size: 8px;
+  width: 100px;
 }
+/* .hostSelect {width: 100px}
+.sourceSelect {width: 100px}
+.targetSelect {width: 100px} */
 
 /* #frame {
   border: solid 0.5px;

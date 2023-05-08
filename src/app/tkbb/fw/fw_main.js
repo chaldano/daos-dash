@@ -1,14 +1,8 @@
 import { requestData } from 'TkbbFolder/net/client.js';
 import { selectZones } from 'TkbbFolder/fw/fw_left.js';
-// import { resolveZones } from 'TkbbFolder/fw/fw_right.js';
 import { drawMatrix } from 'TkbbFolder/fw/fw_upper.js';
 
-// import { createTaskBox } from 'TkbbFolder/dom/html.js';
-// import { removeDisplayBox } from 'TkbbFolder/dom/html.js';
-// import * as d3 from "d3";
-
-function runFirewall() {
-  // removeDisplayBox()
+export function runFirewall() {
   var rules
   requestData('GET', 'http://localhost:8080/fwservice')
     .then(csvdata => {
@@ -16,32 +10,38 @@ function runFirewall() {
 
       // Initialisiere fwrules
       var fwList = setupFwList(rules)
-      console.log("fwlist")
-      console.log(fwList)
-
+      console.log("fwlist",fwList)
+      
       // Extrahiere DISABLE Rules
       var selection = ["[DISABLED]  ALLOW"]
       // AllowedRules
       var arules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
-
+      console.log("Arules",arules)
+      
       // Berechne Zonenliste
       const szones = getZones(arules, 'source')
       const dzones = getZones(arules, 'destination')
-      // resolveZones(arules, szones, dzones)
-      // resolveZones()
-      selectZones(arules, szones, dzones)
+      const hostnames = getHostNames(arules)
+
+      // Default-Auswahl einfügen
+      szones.unshift('!*')
+      dzones.unshift('!*')
+      hostnames.unshift('!*')
+
+      selectZones(arules, szones, dzones, hostnames)
     })
 }
 
-function analyseRules(zoneSelection) {
+
+export function analyseRules(zoneSelection) {
   
   var rules = zoneSelection['rules']
 
   // Auflösung von Mehrfachnennung von Source und Target ) 
-  var matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target']) // true - extrahieren 
+  var matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target'], zoneSelection['host']) // true - extrahieren 
+
   matrixdata = createHash(matrixdata)
   matrixdata = createMatrix(matrixdata)
-  
   const svgtarget = drawMatrix(matrixdata)
 }
 
@@ -66,14 +66,8 @@ function setupFwList(list) {
   return fwList
 }
 // Extrahiert Zonen (source, destination)
-function getZones(rules, zone) {
+export function getZones(rules, zone) {
   var zonelist = []
-  // var fwList = setupFwList(rules)
-
-  // // DISABLE RULE EXTRAHIEREN
-  // var selection = ["[DISABLED]  ALLOW"]
-  // var AllowedRules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
-
   var resolvedZones = resolveTargetsfromList(rules, zone)
   const zones = getNodeList(resolvedZones, zone)
   zones.forEach(target => {
@@ -82,43 +76,43 @@ function getZones(rules, zone) {
   return zonelist
 }
 
+
 // Extrahiert Regeln auf Grundlage von Zonen
 function extractData(rules, zoneSource, zoneTarget) {
-  
   // Auflösen von zoneTarget
-  var resolvedDestination = resolveTargetsfromList(rules, 'destination')
-  var DestinationRules = filterList(resolvedDestination, "destination", zoneTarget, false); // false: nur destination filtern
-  var SourceRules = resolveTargetsfromList(DestinationRules, 'source')
+  // console.log("Rules",rules)
   
+  let DestinationRules
+  let resolvedDestination = resolveTargetsfromList(rules, 'destination')
+  DestinationRules = filterList(resolvedDestination, "destination", zoneTarget, false); // false: nur destination filtern
+  let SourceRules = resolveTargetsfromList(DestinationRules, 'source')
+
+  let SourceRulesExtracted
+
   if (zoneSource == "*") {
     // Exclude Regeln ?
-    var SourceRulesExtracted = SourceRules
-    // console.log("SourceRulesExtracted-Wildcard", SourceRulesExtracted)
+    SourceRulesExtracted = SourceRules
   } else {
-    
-    SourceRulesExtracted = filterList(SourceRules, "source", zoneSource, false);
-    // console.log("SourceRulesExtracted-Filter", SourceRulesExtracted)
-  }
-  // })
-  // }
-  // else {
-  //   SourceRulesExtracted = filterList(SourceRules, "source", Sources, false);
-  //   console.log("SourceRulesSelected", SourceRulesExtracted)
 
-  // }
+    SourceRulesExtracted = filterList(SourceRules, "source", zoneSource, false);
+  }
+
 
   //SERVICE Rules aus SourceRules
   var ServiceRules = resolveTargetsfromList(SourceRulesExtracted, 'service')
-  
   const AppRules = resolveTargetsfromList(ServiceRules, 'app')
-  
+
   // Combine rules with "service" + "app"
   const ServiceRulesCombined = newListAttribute(AppRules, "service", "app")
+
   const DadrRules = resolveTargetsfromList(ServiceRulesCombined, 'daddress')
   const SadrRules = resolveTargetsfromList(DadrRules, 'saddress')
+  // console.log("DadrRules",DadrRules)
+  // console.log("SadrRules",SadrRules)
+  
   const serviceNodes = getNodeList(ServiceRulesCombined, 'service.app')
   const sourceNodes = getNodeList(SourceRulesExtracted, 'source')
-  
+
   const ipaddresses = getAdrs(SadrRules, serviceNodes)
 
   const matrixdata = {
@@ -141,24 +135,17 @@ function createHash(matrixdata) {
   const relationhash = {}
   sourceNodes.forEach(srcnode => {
     SadrRules.forEach(item => {
-      // console.log("Item",item.source,srcnode.source)
       if (item.source == srcnode.source) {
         var ipadr
-        // console.log("Src:",srcnode.source)
         var grid = {}
-        // grid.id = `${item.source}-${item.service}.${item.app}`
         var sourceid = srcnode.id
         var serviceid
         for (var obj of serviceNodes) {
           if (obj["service.app"] == item["service.app"]) {
             serviceid = obj.id
             ipadr = ipaddresses[`${srcnode.source}-${obj['service.app']}`]
-            // console.log("Paar",ipadr)
             break
-          } else {
-            // console.log("raus",`${sourceid}-${serviceid}` )
-          }
-
+          } 
         }
         grid.ipadr = ipadr
         grid.id = `${sourceid}-${serviceid}`
@@ -169,8 +156,6 @@ function createHash(matrixdata) {
       }
     })
   })
-  console.log("Hash", relationhash)
-  // const zone = Destination[0] // TargetZone
 
   matrixdata['rhash'] = relationhash
   return matrixdata
@@ -255,6 +240,42 @@ function getAdrs(list, target) {
   })
   return addresslist
 }
+// Sucht initial alle Hostname / IP-Adressen
+function getHostNames(list, target) {
+  let hostsSource = []
+  let hostsTarget = []
+  let hostsAll = []
+
+  const shosts = resolveTargetsfromList(list, 'saddress')
+  shosts.forEach(item => {
+    if (!(hostsSource.includes(item['saddress']))) {
+      hostsSource.push(item['saddress'])
+    }
+    if (!(hostsAll.includes(item['saddress']))) {
+      hostsAll.push(item['saddress'])
+    }
+
+  })
+  const hostsSourceS = hostsSource.sort()
+  const thosts = resolveTargetsfromList(list, 'daddress')
+  thosts.forEach(item => {
+    if (!(hostsTarget.includes(item['daddress']))) {
+      hostsTarget.push(item['daddress'])
+    }
+    if (!(hostsAll.includes(item['daddress']))) {
+      hostsAll.push(item['daddress'])
+    }
+
+  })
+  const hostsTargetS = hostsTarget.sort()
+  const hostsAllS = hostsAll.sort()
+  
+  // Auswahl beliebiger Host
+  // hostsAllS.unshift('*')
+  return hostsAllS
+  // return addresslist
+}
+
 // Fügt zwei Attribute (Service/App) zu einem Attribut (Service.App) zusammen 
 function newListAttribute(list, index1, index2) {
   const Nodes = []
@@ -270,7 +291,7 @@ function newListAttribute(list, index1, index2) {
   })
   return Nodes
 }
-function resolveTargetsfromList(list, target) {
+export function resolveTargetsfromList(list, target) {
 
   var resolvedTarget = [];
   // Auflösung von Targets
@@ -278,8 +299,6 @@ function resolveTargetsfromList(list, target) {
 
     if (listItem[target].indexOf(';') > -1) {
       var targets = listItem[target].split(';')
-      // console.log("ListItem",listItem[target])
-
       targets.forEach(tgt => {
         var listItemNew = {}
         Object.assign(listItemNew, listItem)
@@ -303,12 +322,10 @@ function resolveTargetsfromList(list, target) {
 
 // Filterung der Liste in Feld "target" nach Wert "filter und Negation = false"
 // Filterung der Liste in Feld "target" außer Wert "filter" und Negation = true
-
-function filterList(list, target, selections, NEGATION) {
+export function filterList(list, target, selections, NEGATION) {
   var filteredList = list
   var newList
   var newLists = []
-  console.log("Selection:", selections)
   selections.forEach(selection => {
     if (NEGATION) {
       filteredList = filteredList.filter(item => {
@@ -322,25 +339,23 @@ function filterList(list, target, selections, NEGATION) {
       newLists = newLists.concat(newList)
     }
   })
-  console.log("FilteredList", filteredList)
-  console.log("NewList", newList)
   return (NEGATION) ? filteredList : newLists
 }
 
-function drawFirewall (canvas) {
-  
+export function drawFirewall(canvas) {
+
   const textdistance = "10"
 
-  const objectID = "obj"+canvas.Target
+  const objectID = "obj" + canvas.Target
 
   // Beschriftungsbereich und Parameter der Matrix
   const matrixhead = 3 * canvas.Unit
 
-  const targetTid = "targetT"+objectID
+  const targetTid = "targetT" + objectID
   const targetTx = canvas.BaseX + canvas.ObjWidth / 2
   const targetTy = canvas.BaseY - matrixhead
 
-  const sourceTid = "sourceT"+objectID
+  const sourceTid = "sourceT" + objectID
   const sourceTx = canvas.BaseX - textdistance
   const sourceTy = canvas.BaseY
 
@@ -397,7 +412,7 @@ function drawFirewall (canvas) {
     .attr("x1", canvas.ObjWidth / 2)
     .attr("y1", 0 - matrixhead)
     .attr("x2", canvas.ObjWidth / 2)
-    .attr("y2", canvas.ObjWidth + matrixhead/2)
+    .attr("y2", canvas.ObjWidth + matrixhead / 2)
 
   // Source-Text-Bereich
   can
@@ -405,9 +420,5 @@ function drawFirewall (canvas) {
     .attr("transform", "translate(" + sourceTx + "," + sourceTy + ")")
     .attr("id", sourceTid)
 
-    // return svgid
+  // return svgid
 }
-
-export { runFirewall };
-export { analyseRules }
-export { drawFirewall }

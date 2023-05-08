@@ -17,13 +17,13 @@ function drawMatrix(matrixdata) {
 
   console.log("Matrix", matrixdata.matrix)
 
-  const screenwidth = "1300"
-  const screenheight = "350"
+  const screenwidth = "1600"
+  const screenheight = "400"
   const unit = 15                // Matrixelementgröße
   
   // Canvas Umgebung einrichten
   const canvas = new daos.Canvas(target, screenwidth, screenheight)
-  canvas.BaseX = 150;
+  canvas.BaseX = 100;
   canvas.BaseY =  50;
   canvas.Unit = unit
   
@@ -32,13 +32,6 @@ function drawMatrix(matrixdata) {
   // canvas.ObjWidth = objectwidth;
 
   const textdistance = "10"
-
-  // const baseX = 150;
-  // const offsetX = 0;
-  // const baseY = 50;
-  // const offsetY = 0;
-
-  // const svgid = "svgupper"
 
   // Matrixbereich
   const matrixX = canvas.BaseX

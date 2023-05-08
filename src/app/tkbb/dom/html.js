@@ -118,8 +118,11 @@ function removeContentBox() {
 function createDetailBox() {
     const boxID = 'detailBoxID'
     removeBox(boxID)
-    const FormBox = new DomElement({ targetid: 'rightid', ownid: boxID, type: 'div' })
-    FormBox.addClass('detailBox')
+    const DetailBox = new DomElement({ targetid: 'rightid', ownid: boxID, type: 'div' })
+    DetailBox.addClass('detailBox')
+    DetailBox.addClass('position-relative')
+    DetailBox.addClass('d-flex')
+    DetailBox.addClass('justify-content-center')
     return boxID
 }
 

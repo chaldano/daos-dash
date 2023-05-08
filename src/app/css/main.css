@@ -38,6 +38,8 @@ body {
 
 } */
 
+/* Zeilen */
+
 #roomRow {
   height: 40%;
   /* background-color: green; */
@@ -49,6 +51,7 @@ body {
 
 }
 
+/* Spalten einer Zeile*/
 #upperid {
   height: 100%;
   /* width: 100%; */
@@ -61,10 +64,10 @@ body {
   /* padding-right: 0px; */
 }
 
-/* Spalten einer Zeile*/
 #leftid,
 #rightid,
 #middleid {
+  
   height: 100%;
   /* width: 95%; */
   /* background-color: gray; */
@@ -76,8 +79,12 @@ body {
 /* Box innerhalb der #upperid */
 
 .displayBox {
-  border: solid 0.5px;
-  /* border-color: white; */
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  
+  /* border: solid 0.5px; */
+  /* border-color:yellow; */
   /* background-color: gray; */
   height: 100%;
   width: 100%;
@@ -86,6 +93,10 @@ body {
 /* Boxen innerhalb einer Spalte */
 .taskBox,
 .detailBox {
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  
   /* border: solid 0.5px; */
   /* border-color:#2669bf; */
   /* background-color: white; */
@@ -109,9 +120,8 @@ body {
 
 /* Zentriert Canvas-Bereiche  */
 .canvas {
-  padding: 0;
-  margin: auto;
-  display: block;
+  /* padding: 0; */
+  /* margin: auto; */
   /* width: 350px; */
   border-color: yellow;
   border-style: solid;
@@ -140,6 +150,35 @@ body {
 .navbar-collapse {
   justify-content: flex-end;
 }
+
+.arrow {
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+
 
 /* .form-holder {
     display: flex;

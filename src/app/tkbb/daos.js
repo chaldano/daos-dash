@@ -69,6 +69,21 @@ export class Canvas {
     // }
 }
 
+// Funktion zum Anlegen einer Canvas
+
+export function setCanvas(canvas) {
+    // Wähle container aus
+    const box = d3.select('#' + canvas.Target)
+    console.log("Canvas", canvas.ID)
+    box
+      .append('svg')
+      .attr("class","canvas")
+      .attr("width", canvas.Width)
+      .attr("height", canvas.Height)
+      .attr("id", canvas.ID)
+  }
+  
+
 // Klasse für einen Raum
 export class Daos {
     constructor(name) {
@@ -153,16 +168,3 @@ export class Zone {
     }
 }
 
-// Funktion zum Anlegen einer Canvas
-
-export function setCanvas(canvas) {
-    // var id = canvas.ID
-    const box = d3.select('#' + canvas.Target)
-    console.log("Canvas", canvas.ID)
-    box
-      .append('svg')
-      .attr("class","canvas")
-      .attr("width", canvas.Width)
-      .attr("height", canvas.Height)
-      .attr("id", canvas.ID)
-  }
