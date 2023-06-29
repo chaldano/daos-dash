@@ -40,13 +40,17 @@ function showTableSource(matrixdata, selectedSourceIndex) {
         tablerules.push(tablerule)
       }
     }
+  // showRule(sources,targets)
+  
   })
 
   // Sortiere Rules
   tablerules.sort(compare)
-
+// console.log("TableRules", tablerules)
   const tableSelection = {
-    hnames: ["ID", "Source", "Service/App", "RuleID"],
+    // hnames: ["ID", "Source", "Service/App", "R-ID","R-UUID"],
+    // hvalues: ["id", "source", "service", "ruleid","ruleuid",]
+    hnames: ["ID", "Source", "Service/App", "R-ID"],
     hvalues: ["id", "source", "service", "ruleid"]
   }
 
@@ -55,6 +59,7 @@ function showTableSource(matrixdata, selectedSourceIndex) {
   // Anzeige Table-Header
   putTableHeader(tabID, tableSelection);
   // Anzeige Table-Body
+  console.log("TableRules",tablerules)
   putTable(tabID, tableSelection, tablerules);
 
   $('tbody tr').click(function () {
@@ -75,7 +80,11 @@ function compare(a, b) {
   }
   return comparison;
 }
-
+function showRule(source,target){
+  console.log("Show selected Rule")
+  console.log(source)
+  console.log(target)
+}
 export { showTableSource };
 export { removeTable };
 // export { RunTableRow };

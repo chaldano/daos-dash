@@ -7,17 +7,31 @@ export function runFirewall() {
   requestData('GET', 'http://localhost:8080/fwservice')
     .then(csvdata => {
       rules = csvdata[0];
+      console.log("fwlistRow", rules)
 
       // Initialisiere fwrules
       var fwList = setupFwList(rules)
-      console.log("fwlist",fwList)
-      
+      console.log("fwlist", fwList)
+
+
+
       // Extrahiere DISABLE Rules
       var selection = ["[DISABLED]  ALLOW"]
       // AllowedRules
       var arules = filterList(fwList, "action", selection, true); // DISABLE extrahieren
-      console.log("Arules",arules)
-      
+
+      // arules.forEach(item => {
+      //   if (item.sdevice != 'any' || item.ddevice != 'any') {
+      //     console.log("UUID: ", item.ruleid + ":" + item.sdevice + ":" + item.ddevice)
+      //   }
+      // })
+
+      // arules.forEach(item => {
+      //   if (item.suser != 'any') {
+      //     console.log("UUID-User: ", item.ruleid + ":" + item.suser + "Hosts:" + item.saddress) 
+      //   }
+      // })
+
       // Berechne Zonenliste
       const szones = getZones(arules, 'source')
       const dzones = getZones(arules, 'destination')
@@ -34,12 +48,12 @@ export function runFirewall() {
 
 
 export function analyseRules(zoneSelection) {
-  
+
   var rules = zoneSelection['rules']
 
   // Auflösung von Mehrfachnennung von Source und Target ) 
   var matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target'], zoneSelection['host']) // true - extrahieren 
-
+  resolveUser(matrixdata)
   matrixdata = createHash(matrixdata)
   matrixdata = createMatrix(matrixdata)
   const svgtarget = drawMatrix(matrixdata)
@@ -48,21 +62,53 @@ export function analyseRules(zoneSelection) {
 // Schreibt fwList um
 function setupFwList(list) {
   var fwList = []
+  // console.log("List",list)
+
   list.forEach(rule => {
     var listitem = new Object()
 
-    listitem.ruleid = rule[""]
-    listitem.source = rule["Source Zone"].toUpperCase()
-    // listitem.destination = rule["Destination Zone"]
-    listitem.destination = rule["Destination Zone"].toUpperCase()
-    listitem.saddress = rule["Source Address"]
-    listitem.daddress = rule["Destination Address"]
-    listitem.service = rule["Service"].toUpperCase()
-    listitem.app = rule["Application"].toUpperCase()
-    listitem.action = rule["Action"].toUpperCase()
+    // listitem.ruleid = rule["\""]
+    // console.log("RuleID-S",rule["Rid"])
+    // console.log("RuleID-T",listitem.ruleid)
+
+    var uuidparts = rule["Rule UUID"].split('-')
+    listitem.ruleid = uuidparts[4]                   // Short
+    listitem.rulelid = rule["Rule UUID"]             // Long
+    // console.log("UUID-Parts",uuidparts)
+
     listitem.name = rule["Name"]
+    listitem.location = rule["Location"]
+    listitem.tags = rule["Tags"]
+    listitem.groups = rule["Group"]
+
+    listitem.source = rule["Source Zone"].toUpperCase()
+    listitem.saddress = rule["Source Address"]
+    listitem.suser = rule["Source User"]
+    listitem.sdevice = rule["Source Device"]
+
+    listitem.destination = rule["Destination Zone"].toUpperCase()
+    listitem.daddress = rule["Destination Address"]
+    listitem.ddevice = rule["Destination Device"]
+    listitem.duser = rule["Destination User"]
+
+    listitem.app = rule["Application"].toUpperCase()
+    listitem.service = rule["Service"].toUpperCase()
+    listitem.urlcat = rule["URL Category"]
+
+    listitem.action = rule["Action"].toUpperCase()
+    listitem.profile = rule["Profile"]
+    listitem.options = rule["Options"]
+
+    listitem.target = rule["Target"]
+    listitem.usagedesc = rule["Rule Usage Description"]
+
+    listitem.modified = rule["Modified"]
+    listitem.created = rule["Created"]
+
+
     fwList.push(listitem)
   })
+  // console.log("FWLIST", fwList)
   return fwList
 }
 // Extrahiert Zonen (source, destination)
@@ -81,23 +127,33 @@ export function getZones(rules, zone) {
 function extractData(rules, zoneSource, zoneTarget) {
   // Auflösen von zoneTarget
   // console.log("Rules",rules)
-  
-  let DestinationRules
-  let resolvedDestination = resolveTargetsfromList(rules, 'destination')
-  DestinationRules = filterList(resolvedDestination, "destination", zoneTarget, false); // false: nur destination filtern
-  let SourceRules = resolveTargetsfromList(DestinationRules, 'source')
 
+  let DestinationRules
+
+  let resolvedDestination = resolveTargetsfromList(rules, 'destination')
+  let DestinationRulesExtracted
+
+  console.log("ZoneSource:", zoneSource)
+  console.log("ZoneTarget:", zoneTarget)
+
+  if (zoneTarget == "*") {
+    DestinationRulesExtracted = resolvedDestination
+  }
+  else {
+    DestinationRulesExtracted = filterList(resolvedDestination, "destination", zoneTarget, false)
+  }
+
+  let SourceRules = resolveTargetsfromList(DestinationRulesExtracted, 'source')
   let SourceRulesExtracted
 
   if (zoneSource == "*") {
     // Exclude Regeln ?
     SourceRulesExtracted = SourceRules
   } else {
-
     SourceRulesExtracted = filterList(SourceRules, "source", zoneSource, false);
   }
 
-
+  // console.log("SourceRuleExtracted", SourceRulesExtracted)
   //SERVICE Rules aus SourceRules
   var ServiceRules = resolveTargetsfromList(SourceRulesExtracted, 'service')
   const AppRules = resolveTargetsfromList(ServiceRules, 'app')
@@ -107,23 +163,64 @@ function extractData(rules, zoneSource, zoneTarget) {
 
   const DadrRules = resolveTargetsfromList(ServiceRulesCombined, 'daddress')
   const SadrRules = resolveTargetsfromList(DadrRules, 'saddress')
-  // console.log("DadrRules",DadrRules)
-  // console.log("SadrRules",SadrRules)
-  
+  const SadrRulesUser = resolveTargetsfromList(SadrRules, 'suser')
+
   const serviceNodes = getNodeList(ServiceRulesCombined, 'service.app')
   const sourceNodes = getNodeList(SourceRulesExtracted, 'source')
 
-  const ipaddresses = getAdrs(SadrRules, serviceNodes)
+  // const ipaddresses = getAdrs(SadrRules, serviceNodes)
+  const ipaddresses = getAdrsUser(SadrRules, serviceNodes)
+  const ipaddressesUser = getAdrsUser(SadrRulesUser, serviceNodes)
+
 
   const matrixdata = {
+    rsrc: SadrRules,
+    rsrcUser: SadrRulesUser,
+    rdst: DadrRules,
     zone: zoneTarget[0],
     source: sourceNodes,
     target: serviceNodes,
     sadr: SadrRules,
     sadrip: ipaddresses,
+    sadripUser: ipaddressesUser,
     state: "Selectable",
   }
   return matrixdata
+}
+
+function resolveUser(matrixdata) {
+  console.log("ResolveUser)")
+  var rsrc = matrixdata.rsrcUser
+  var rdst = matrixdata.rdst
+  var ipaddrUser = matrixdata.sadripUser
+  var ipaddr = matrixdata.sadrip
+
+  var sourceNodes = matrixdata.source
+
+  // Liste suser
+  var userList = []
+  rsrc.forEach(item => {
+    if (!userList.includes(item.suser)) {
+      userList.push(item.suser)
+    }
+  })
+  
+  console.log(userList.sort())
+  
+  // Liste suser mit saddr 
+  
+  var userListWithAdresses = {}
+  userListWithAdresses = getUserbyAdr(rsrc)
+  console.log("Anzahl Source-Adressen:",Object.keys(userListWithAdresses).length)
+  console.log(userListWithAdresses)
+  
+  
+  console.log("Anzahl Service-Targets mit Ipaddress:",Object.keys(ipaddr).length)
+  console.log("ipaddress", ipaddr)
+  
+  console.log("Anzahl Service-Targets mit IpaddressUser:",Object.keys(ipaddrUser).length)
+  console.log("ipaddressUser", ipaddrUser)
+  // })
 }
 
 function createHash(matrixdata) {
@@ -145,7 +242,7 @@ function createHash(matrixdata) {
             serviceid = obj.id
             ipadr = ipaddresses[`${srcnode.source}-${obj['service.app']}`]
             break
-          } 
+          }
         }
         grid.ipadr = ipadr
         grid.id = `${sourceid}-${serviceid}`
@@ -240,6 +337,56 @@ function getAdrs(list, target) {
   })
   return addresslist
 }
+
+// Listet pro Services.app alle SourceIp-Adressen-SourceUser
+function getAdrsUser(list, target) {
+  var addresslist = {}
+  list.forEach(rule => {
+    if (addresslist[`${rule.source}-${rule['service.app']}`]) {
+      if (!(addresslist[`${rule.source}-${rule['service.app']}`].sadr.includes(`${rule.saddress}-${rule['suser']}`))) {
+        addresslist[`${rule.source}-${rule['service.app']}`].sadr.push(`${rule.saddress}-${rule['suser']}`)
+      }
+      if (!(addresslist[`${rule.source}-${rule['service.app']}`].dadr.includes(rule.daddress))) {
+        addresslist[`${rule.source}-${rule['service.app']}`].dadr.push(rule.daddress)
+      }
+    }
+    else {
+      var saddress = []
+      var daddress = []
+
+      var adrs = {
+        sadr: saddress,
+        dadr: daddress
+      }
+      adrs['sadr'].push(`${rule.saddress}-${rule['suser']}`)
+      adrs['dadr'].push(rule.daddress)
+      addresslist[`${rule.source}-${rule['service.app']}`] = adrs
+    }
+  })
+  return addresslist
+} 
+// Listet pro SourceUser alle Souce-Ip-Adressen
+function getUserbyAdr(list) {
+  var addresslist = {}
+  list.forEach(rule => {
+    if (addresslist[rule['suser']]) {
+      if (!(addresslist[rule['suser']].sadr.includes(rule.saddress))) {
+        addresslist[rule['suser']].sadr.push(rule.saddress)
+      }
+    }
+    else {
+      var saddress = []
+
+      var adrs = {
+        sadr: saddress,
+      }
+      adrs['sadr'].push(rule.saddress)
+      addresslist[rule.suser] = adrs
+    }
+  })
+  return addresslist
+} 
+
 // Sucht initial alle Hostname / IP-Adressen
 function getHostNames(list, target) {
   let hostsSource = []
@@ -269,7 +416,7 @@ function getHostNames(list, target) {
   })
   const hostsTargetS = hostsTarget.sort()
   const hostsAllS = hostsAll.sort()
-  
+
   // Auswahl beliebiger Host
   // hostsAllS.unshift('*')
   return hostsAllS

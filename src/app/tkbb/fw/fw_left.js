@@ -166,7 +166,7 @@ function selectZones(rules, szones, dzones, hostnames) {
 
   // Auswahl Host 
   $('#' + selectHost).on("change", function () {
-    selectedHost.length=0
+    selectedHost.length = 0
     selectedHost.push($(this).val())
     setDefaultSelection(hostnames, selectedHost[0])
     getHostZones(rules, hostnames)
@@ -177,8 +177,8 @@ function selectZones(rules, szones, dzones, hostnames) {
   $('#' + selectSource).on("change", function () {
     selectedSource.length = 0
     selectedSource.push($(this).val())
-    console.log("Source nach Click",selectedSource)
-    
+    console.log("Source nach Click", selectedSource)
+
     if (selectedHost[0] != '!*') {
       // Hostmodus
       setDefaultSelection(szones, selectedSource[0])
@@ -198,8 +198,8 @@ function selectZones(rules, szones, dzones, hostnames) {
     // Zonenmodus
     selectedTarget.length = 0
     selectedTarget.push($(this).val())
-    console.log("Target nach Click",selectedTarget)
-    
+    console.log("Target nach Click", selectedTarget)
+
 
     if (selectedHost[0] != '!*') {
       // Hostmodus
@@ -213,6 +213,8 @@ function selectZones(rules, szones, dzones, hostnames) {
   $('#BanalyseID').on("click", function () {
     selectedZones['rules'] = rules
     if (selectedHost == '!*') {
+      console.log("Enter into Zonemodus")
+      
       // Zonenmodus
       if (selectedSource == '!*') {
         let selectedSourceDefault = []
@@ -221,18 +223,26 @@ function selectZones(rules, szones, dzones, hostnames) {
         // selectedSource = '*'
       }
       else {
-      selectedZones['source'] = selectedSource
+        selectedZones['source'] = selectedSource
       }
-      console.log("Auswahl Source:",selectedSource)
-      
-      selectedZones['target'] = selectedTarget
-      selectedZones['host'] = selectedHost
+      console.log("Auswahl Source:", selectedSource)
+
+      if (selectedTarget == '!*') {
+        let selectedTargetDefault = []
+        selectedTargetDefault.push('*')
+        selectedZones['target'] = selectedTargetDefault
+      }
+      else {
+        selectedZones['target'] = selectedTarget
+        selectedZones['host'] = selectedHost
+      }
       // Weiter mit Analyse  
     }
     else {
       // Hostmodus
       // Source:Target-Paare trennen
       // Nur Source oder Target ist ausgewählt
+      console.log("Enter into Hostmodus")
       
       let selection = []
       if (selectedSource == '!*') {
@@ -242,14 +252,14 @@ function selectZones(rules, szones, dzones, hostnames) {
         selection = selectedSource[0].split(':')
       }
 
-      selectedSource.length=0
-      selectedTarget.length=0
+      selectedSource.length = 0
+      selectedTarget.length = 0
       // Default ! entfernen
-      
-      console.log("selectedTarget",selectedTarget)
-      console.log("selectedSource",selectedSource)
-      console.log("Selection",selection)
-      
+
+      console.log("Hostmodus: selectedTarget", selectedTarget)
+      console.log("Hostmodus: selectedSource", selectedSource)
+      console.log("Hostmodus: Selection", selection)
+
       selection[0] = selection[0].substring(1)
 
       selectedTarget.push(selection.pop())
@@ -257,8 +267,8 @@ function selectZones(rules, szones, dzones, hostnames) {
 
       selectedZones['source'] = selectedSource
       selectedZones['target'] = selectedTarget
-      
-    
+
+
     }
     console.log("SelectedZones")
     console.log(selectedZones)
@@ -270,42 +280,42 @@ function selectZones(rules, szones, dzones, hostnames) {
 // function getHostZones(rules, selectedHost, hostnames) {
 function getHostZones(rules, hostnames) {
 
-  let index = getDefaultSelection(hostnames) 
+  let index = getDefaultSelection(hostnames)
 
   var szones = []
   var dzones = []
   var selectedHost = []
   var hostSelection = []
-  
+
   selectedHost.push(hostnames[index])
-  
+
   // Zonenmodus
   if (selectedHost[0] == '!*') {
-  
+
     szones = main.getZones(rules, 'source')
     dzones = main.getZones(rules, 'destination')
     szones.unshift('*')
     dzones.unshift('*')
-    
+
     //  Hostmodus
     //  Sources und Targets für Host erzeugen 
   } else {
-    
+
     hostSelection.push(selectedHost[0].substring(1))
-    
+
     let resolvedDestination = main.resolveTargetsfromList(rules, 'destination')
     let resolvedDestinationHosts = main.resolveTargetsfromList(resolvedDestination, 'daddress')
     let dhosts = main.filterList(resolvedDestinationHosts, "daddress", hostSelection, false);
-    
+
     let resolvedSource = main.resolveTargetsfromList(resolvedDestination, 'source')
     let resolvedSourceHosts = main.resolveTargetsfromList(resolvedSource, 'saddress')
     let shosts = main.filterList(resolvedSourceHosts, "saddress", hostSelection, false);
-    
+
     shosts.forEach(element => {
       szones.push(element.source + ":" + element.destination)
     })
     szones.unshift('*')
-    
+
     dhosts.forEach(element => {
       dzones.push(element.source + ":" + element.destination)
     })

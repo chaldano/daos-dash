@@ -18,7 +18,7 @@ function drawMatrix(matrixdata) {
   console.log("Matrix", matrixdata.matrix)
 
   const screenwidth = "1600"
-  const screenheight = "400"
+  const screenheight = "450"
   const unit = 15                // Matrixelementgröße
   
   // Canvas Umgebung einrichten
