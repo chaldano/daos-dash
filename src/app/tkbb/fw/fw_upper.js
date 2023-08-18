@@ -15,7 +15,7 @@ function drawMatrix(matrixdata) {
 
   var matrixState = matrixdata.state;
 
-  console.log("Matrix", matrixdata.matrix)
+  // console.log("Matrix", matrixdata.matrix)
 
   const screenwidth = "1600"
   const screenheight = "450"
@@ -161,7 +161,7 @@ function drawMatrix(matrixdata) {
   box.selectAll("rect.grid").on("click", gridState);
 
   function gridOver(event, d) {
-    console.log("Durch over", matrixState)
+    // console.log("Durch over", matrixState)
     
     if (matrixState == "Selectable") {
       box.selectAll("rect.grid").attr("class", p => {
@@ -224,7 +224,7 @@ function drawMatrix(matrixdata) {
 
   // States: "Selected" (einfrieren; "Selectable" (mouseover))
   function gridState(event, d) {
-    console.log("Click-jetzt:",matrixState)
+    // console.log("Click-jetzt:",matrixState)
     if (matrixState == "Selected") {
       // Status aufheben
       matrixState = "Selectable"

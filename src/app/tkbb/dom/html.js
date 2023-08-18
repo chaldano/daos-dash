@@ -150,7 +150,7 @@ function registerFormFunction(formId, submitFunction) {
 function listRecordSelection(tHeader, tValue) {
 
     tHeader.forEach((element, index) => {
-        console.log("(" + index + ") " + element + ": " + tValue[index])
+        // console.log("(" + index + ") " + element + ": " + tValue[index])
     })
 
 }
@@ -161,7 +161,7 @@ function listRecordSelectionHTML(tid, tHeader, tValue) {
     const Record = new DomElement({ targetid: tid, ownid: 'recordid', type: 'div' })
 
     tHeader.forEach((element, index) => {
-        console.log("(" + index + ") " + element + ": " + tValue[index])
+        // console.log("(" + index + ") " + element + ": " + tValue[index])
 
         const Label = new DomElement({ targetid: 'recordid', ownid: 'label' + index, type: 'label' })
         Label.addContent(element)

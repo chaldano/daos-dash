@@ -214,7 +214,7 @@ function selectZones(rules, szones, dzones, hostnames) {
     selectedZones['rules'] = rules
     if (selectedHost == '!*') {
       console.log("Enter into Zonemodus")
-      
+
       // Zonenmodus
       if (selectedSource == '!*') {
         let selectedSourceDefault = []
@@ -237,43 +237,55 @@ function selectZones(rules, szones, dzones, hostnames) {
         selectedZones['host'] = selectedHost
       }
       // Weiter mit Analyse  
+      main.analyseRules(selectedZones)
     }
-    else {
+    if (selectedHost != '!*') {
       // Hostmodus
       // Source:Target-Paare trennen
       // Nur Source oder Target ist ausgewählt
       console.log("Enter into Hostmodus")
-      
-      let selection = []
-      if (selectedSource == '!*') {
-        selection = selectedTarget[0].split(':')
+
+      if (!(selectedSource == '!*' && selectedTarget == '!*')) {
+
+        let selection = []
+        // Source oder Target-Zone ist ausgewählt
+        if (selectedSource == '!*') {
+          selection = selectedTarget[0].split(':')
+        }
+        if (selectedTarget == '!*') {
+          selection = selectedSource[0].split(':')
+        }
+
+        selectedSource.length = 0
+        selectedTarget.length = 0
+        // Default ! entfernen
+
+        console.log("Hostmodus: selectedTarget", selectedTarget)
+        console.log("Hostmodus: selectedSource", selectedSource)
+        console.log("Hostmodus: Selection", selection)
+
+        selection[0] = selection[0].substring(1)
+
+        selectedTarget.push(selection.pop())
+        selectedSource.push(selection.pop())
+
+        selectedZones['source'] = selectedSource
+        selectedZones['target'] = selectedTarget
+
+        // Nur wenn eine Source- oder Target-Zone ausgewählt wurde
+        main.analyseRules(selectedZones)
       }
-      if (selectedTarget == '!*') {
-        selection = selectedSource[0].split(':')
+      else {
+        console.log("Keine Zone im Hostmodus ausgewählt")
+        console.log("Keine-Zone-Hostmodus: selectedTarget", selectedTarget)
+        console.log("Keine-Zone-Hostmodus: selectedSource", selectedSource)
+        
       }
-
-      selectedSource.length = 0
-      selectedTarget.length = 0
-      // Default ! entfernen
-
-      console.log("Hostmodus: selectedTarget", selectedTarget)
-      console.log("Hostmodus: selectedSource", selectedSource)
-      console.log("Hostmodus: Selection", selection)
-
-      selection[0] = selection[0].substring(1)
-
-      selectedTarget.push(selection.pop())
-      selectedSource.push(selection.pop())
-
-      selectedZones['source'] = selectedSource
-      selectedZones['target'] = selectedTarget
-
-
     }
-    console.log("SelectedZones")
-    console.log(selectedZones)
+    // console.log("SelectedZones")
+    // console.log(selectedZones)
 
-    main.analyseRules(selectedZones)
+    // main.analyseRules(selectedZones)
   })
 }
 
@@ -310,6 +322,7 @@ function getHostZones(rules, hostnames) {
     let resolvedSource = main.resolveTargetsfromList(resolvedDestination, 'source')
     let resolvedSourceHosts = main.resolveTargetsfromList(resolvedSource, 'saddress')
     let shosts = main.filterList(resolvedSourceHosts, "saddress", hostSelection, false);
+
 
     shosts.forEach(element => {
       szones.push(element.source + ":" + element.destination)

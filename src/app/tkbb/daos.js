@@ -74,7 +74,7 @@ export class Canvas {
 export function setCanvas(canvas) {
     // Wähle container aus
     const box = d3.select('#' + canvas.Target)
-    console.log("Canvas", canvas.ID)
+    // console.log("Canvas", canvas.ID)
     box
       .append('svg')
       .attr("class","canvas")
@@ -120,7 +120,8 @@ export class Net {
 export class Proxy {
     constructor(name, ipadr, service) {
         this._name = name
-        this._adr = ipadr
+        this.pointtype ='proxy'
+        this.adr = ipadr
         this._svc = service
         this._geo = 'rect'
         this._width   = 10
@@ -133,7 +134,7 @@ export class Proxy {
         return this._svc
     }
     get Adr() {
-        return this.__adr
+        return this.adr
     }
 }
 

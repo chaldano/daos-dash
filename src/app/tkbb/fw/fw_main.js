@@ -13,8 +13,6 @@ export function runFirewall() {
       var fwList = setupFwList(rules)
       console.log("fwlist", fwList)
 
-
-
       // Extrahiere DISABLE Rules
       var selection = ["[DISABLED]  ALLOW"]
       // AllowedRules
@@ -36,7 +34,8 @@ export function runFirewall() {
       const szones = getZones(arules, 'source')
       const dzones = getZones(arules, 'destination')
       const hostnames = getHostNames(arules)
-
+      console.log("Liste-HostName",hostnames)
+      
       // Default-Auswahl einfügen
       szones.unshift('!*')
       dzones.unshift('!*')
@@ -52,8 +51,9 @@ export function analyseRules(zoneSelection) {
   var rules = zoneSelection['rules']
 
   // Auflösung von Mehrfachnennung von Source und Target ) 
-  var matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target'], zoneSelection['host']) // true - extrahieren 
-  resolveUser(matrixdata)
+  var matrixdata 
+  matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target'], zoneSelection['host']) // true - extrahieren 
+  // resolveUser(matrixdata)
   matrixdata = createHash(matrixdata)
   matrixdata = createMatrix(matrixdata)
   const svgtarget = drawMatrix(matrixdata)
@@ -133,8 +133,8 @@ function extractData(rules, zoneSource, zoneTarget) {
   let resolvedDestination = resolveTargetsfromList(rules, 'destination')
   let DestinationRulesExtracted
 
-  console.log("ZoneSource:", zoneSource)
-  console.log("ZoneTarget:", zoneTarget)
+  // console.log("ZoneSource:", zoneSource)
+  // console.log("ZoneTarget:", zoneTarget)
 
   if (zoneTarget == "*") {
     DestinationRulesExtracted = resolvedDestination
@@ -164,13 +164,21 @@ function extractData(rules, zoneSource, zoneTarget) {
   const DadrRules = resolveTargetsfromList(ServiceRulesCombined, 'daddress')
   const SadrRules = resolveTargetsfromList(DadrRules, 'saddress')
   const SadrRulesUser = resolveTargetsfromList(SadrRules, 'suser')
-
+  console.log("Auflösung-SourceAdrRulesUser",SadrRulesUser)
+  
   const serviceNodes = getNodeList(ServiceRulesCombined, 'service.app')
-  const sourceNodes = getNodeList(SourceRulesExtracted, 'source')
-
-  // const ipaddresses = getAdrs(SadrRules, serviceNodes)
-  const ipaddresses = getAdrsUser(SadrRules, serviceNodes)
+  console.log("Liste der ServiceNodes",serviceNodes)
+  const sourceNodes  = getNodeList(SourceRulesExtracted, 'source')
+  
+  // const ipaddresses     = getAdrsUser(SadrRules, serviceNodes)
+  const ipaddresses     = getAdrsUser(SadrRulesUser, serviceNodes)
+  console.log("Auflösung-IPAdresses",ipaddresses)
+  
   const ipaddressesUser = getAdrsUser(SadrRulesUser, serviceNodes)
+  
+  // Service: Liste SourceAdressen -> Liste TargetAdressen
+  const ipaddrByService = getAdrsByService(SadrRulesUser, serviceNodes)
+  console.log("Liste der Services mit IPAdr:", ipaddrByService)
 
 
   const matrixdata = {
@@ -183,6 +191,7 @@ function extractData(rules, zoneSource, zoneTarget) {
     sadr: SadrRules,
     sadrip: ipaddresses,
     sadripUser: ipaddressesUser,
+    sadripService: ipaddrByService,
     state: "Selectable",
   }
   return matrixdata
@@ -310,7 +319,39 @@ function getNodeList(list, target) {
   })
   return Nodes
 }
-// ermittelt IP-Adressen für eine Service.App Kombination
+// ermittelt alle IP-Adressen-Paare pro Service.App Kombination
+// List  = object
+// Key   = sadr-service.app
+// Value = Array of Pair:    sadr-user, dadr
+
+function getAdrsByService(list, target) {
+  var addresslist = {}
+  list.forEach(rule => {
+    if (addresslist[`${rule.source}-${rule['service.app']}`]) {
+      var pair = {
+        sadr: rule.saddress+"-"+rule.suser,
+        dadr: rule.daddress
+      }
+      // console.log("IndexOfExitingPair:",`${rule.source}-${rule['service.app']}`)
+      addresslist[`${rule.source}-${rule['service.app']}`].push(pair)
+    }
+    else {
+      // console.log("IndexOfNewPair:",`${rule.source}-${rule['service.app']}`)
+
+      var pairs = []
+      
+      var pair = {
+        sadr: rule.saddress+"-"+rule.suser,
+        dadr: rule.daddress
+      }
+      pairs.push(pair)
+      addresslist[`${rule.source}-${rule['service.app']}`] = pairs
+      // console.log("Erstes Paar",addresslist[`${rule.source}-${rule['service.app']}`])
+    }
+  })
+  return addresslist
+}
+
 function getAdrs(list, target) {
   var addresslist = {}
   list.forEach(rule => {
@@ -339,6 +380,10 @@ function getAdrs(list, target) {
 }
 
 // Listet pro Services.app alle SourceIp-Adressen-SourceUser
+// List  = object
+// Key   = sadr-service.app
+// Value = Array of sadr, Array of dadr
+
 function getAdrsUser(list, target) {
   var addresslist = {}
   list.forEach(rule => {
@@ -392,7 +437,6 @@ function getHostNames(list, target) {
   let hostsSource = []
   let hostsTarget = []
   let hostsAll = []
-
   const shosts = resolveTargetsfromList(list, 'saddress')
   shosts.forEach(item => {
     if (!(hostsSource.includes(item['saddress']))) {
@@ -443,7 +487,6 @@ export function resolveTargetsfromList(list, target) {
   var resolvedTarget = [];
   // Auflösung von Targets
   list.forEach(listItem => {
-
     if (listItem[target].indexOf(';') > -1) {
       var targets = listItem[target].split(';')
       targets.forEach(tgt => {

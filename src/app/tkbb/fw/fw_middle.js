@@ -1,11 +1,14 @@
 import { createContentBox } from 'TkbbFolder/dom/html.js';
 import { removeContentBox } from 'TkbbFolder/dom/html.js';
 
-import { createTable }      from 'TkbbFolder/tables/tabbasic.js';
-import { putTable }         from 'TkbbFolder/tables/tabbasic.js';
-import { putTableHeader }   from 'TkbbFolder/tables/tabbasic.js';
+// import { createTable }      from 'TkbbFolder/tables/tabbasic.js';
+// import { putTable }         from 'TkbbFolder/tables/tabbasic.js';
+// import { putTableHeader }   from 'TkbbFolder/tables/tabbasic.js';
+import * as tab from 'TkbbFolder/tables/tabbasic.js';
 
-import { prepareZoneDetail }     from 'TkbbFolder/fw/fw_right.js';
+
+// import { prepareZoneDetail }     from 'TkbbFolder/fw/fw_right.js';
+import * as right     from 'TkbbFolder/fw/fw_right.js';
 
 function removeTable(matrixdata) {
   // const targetContent = createContentBox()
@@ -55,15 +58,26 @@ function showTableSource(matrixdata, selectedSourceIndex) {
   }
 
   const tabID = 'tabFW'
-  createTable(targetContent, tabID)
+  tab.createTable(targetContent, tabID)
   // Anzeige Table-Header
-  putTableHeader(tabID, tableSelection);
+  tab.putTableHeader(tabID, tableSelection);
   // Anzeige Table-Body
   console.log("TableRules",tablerules)
-  putTable(tabID, tableSelection, tablerules);
+  tab.putTable(tabID, tableSelection, tablerules);
 
   $('tbody tr').click(function () {
-    prepareZoneDetail($(this), tablerules, matrixdata)
+    let tabkeys = Object.keys(tablerules[0])
+    let contentKey = tabkeys[0]
+    let selectedContent = $(this).find('td:eq(0)').text()
+    // Suche ausgewählte Zeile in Tabelle      
+    let rowContent = tab.getRowByIndex(contentKey, selectedContent, tablerules)
+    
+    let sourceZone = rowContent.source
+    let targetZone = matrixdata.zone
+    let serviceapp = rowContent.service
+    let data = matrixdata
+
+    right.prepareZoneDetail(sourceZone, targetZone,serviceapp,data)
   })
 }
 
