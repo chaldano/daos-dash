@@ -168,6 +168,7 @@ function selectZones(rules, szones, dzones, hostnames) {
   $('#' + selectHost).on("change", function () {
     selectedHost.length = 0
     selectedHost.push($(this).val())
+    // Setze ausgewählte Host als Default-Host
     setDefaultSelection(hostnames, selectedHost[0])
     getHostZones(rules, hostnames)
   })
@@ -234,8 +235,9 @@ function selectZones(rules, szones, dzones, hostnames) {
       }
       else {
         selectedZones['target'] = selectedTarget
-        selectedZones['host'] = selectedHost
       }
+      selectedZones['host'] = '*'
+      console.log("SelectedZonesCall", selectZones)
       // Weiter mit Analyse  
       main.analyseRules(selectedZones)
     }
@@ -260,17 +262,17 @@ function selectZones(rules, szones, dzones, hostnames) {
         selectedTarget.length = 0
         // Default ! entfernen
 
-        console.log("Hostmodus: selectedTarget", selectedTarget)
-        console.log("Hostmodus: selectedSource", selectedSource)
-        console.log("Hostmodus: Selection", selection)
-
+        
         selection[0] = selection[0].substring(1)
+        selectedHost[0] = selectedHost[0].substring(1)
 
         selectedTarget.push(selection.pop())
         selectedSource.push(selection.pop())
 
         selectedZones['source'] = selectedSource
         selectedZones['target'] = selectedTarget
+        selectedZones['host'] = selectedHost[0]
+
 
         // Nur wenn eine Source- oder Target-Zone ausgewählt wurde
         main.analyseRules(selectedZones)
@@ -279,7 +281,7 @@ function selectZones(rules, szones, dzones, hostnames) {
         console.log("Keine Zone im Hostmodus ausgewählt")
         console.log("Keine-Zone-Hostmodus: selectedTarget", selectedTarget)
         console.log("Keine-Zone-Hostmodus: selectedSource", selectedSource)
-        
+
       }
     }
     // console.log("SelectedZones")
@@ -289,9 +291,11 @@ function selectZones(rules, szones, dzones, hostnames) {
   })
 }
 
+// Sucht für einen Host alle Source- oder Target-Zonen
 // function getHostZones(rules, selectedHost, hostnames) {
 function getHostZones(rules, hostnames) {
 
+  // Ausgewählte Host ermittlen
   let index = getDefaultSelection(hostnames)
 
   var szones = []
@@ -300,10 +304,9 @@ function getHostZones(rules, hostnames) {
   var hostSelection = []
 
   selectedHost.push(hostnames[index])
-
-  // Zonenmodus
+  // Zonenmodus (Host wurde auf * gesetzt)
   if (selectedHost[0] == '!*') {
-
+    // Alle Zonen ermitteln und * als Default einstellen
     szones = main.getZones(rules, 'source')
     dzones = main.getZones(rules, 'destination')
     szones.unshift('*')
@@ -312,27 +315,90 @@ function getHostZones(rules, hostnames) {
     //  Hostmodus
     //  Sources und Targets für Host erzeugen 
   } else {
-
+    
+    let zoneSource ='*'
+    let zoneTarget ='*'
     hostSelection.push(selectedHost[0].substring(1))
+    // console.log("SelectedHost",selectedHost)
+    
+    // console.log("ZoneSource",zoneSource)
+    // console.log("ZoneTarget",zoneTarget)
+    // console.log("SelectedHost",selectedHost)
+    // console.log("HostSelection",selectedHost)
+    // console.log("Rules",rules)
+    let matrixdata = main.extractData(rules, zoneSource, zoneTarget, hostSelection)
+    // let resolvedDestination = main.resolveTargetsfromList(rules, 'destination')
+    // let resolvedDestinationHosts = main.resolveTargetsfromList(resolvedDestination, 'daddress')
+    // let dhosts = main.filterList(resolvedDestinationHosts, "daddress", hostSelection, false);
+    // console.log("DHosts:",dhosts)
 
-    let resolvedDestination = main.resolveTargetsfromList(rules, 'destination')
-    let resolvedDestinationHosts = main.resolveTargetsfromList(resolvedDestination, 'daddress')
-    let dhosts = main.filterList(resolvedDestinationHosts, "daddress", hostSelection, false);
+    // let resolvedSource = main.resolveTargetsfromList(resolvedDestination, 'source')
+    // let resolvedSourceHosts = main.resolveTargetsfromList(resolvedSource, 'saddress')
+    // let shosts = main.filterList(resolvedSourceHosts, "saddress", hostSelection, false);
 
-    let resolvedSource = main.resolveTargetsfromList(resolvedDestination, 'source')
-    let resolvedSourceHosts = main.resolveTargetsfromList(resolvedSource, 'saddress')
-    let shosts = main.filterList(resolvedSourceHosts, "saddress", hostSelection, false);
+    // const matrixdata = {
+    //   rsrc: SadrRules,
+    //   rsrcUser: SadrRulesUser,
+    //   rdst: DadrRules,
+    //   zone: zoneTarget[0],
+    //   source: sourceNodes,
+    //   target: serviceNodes,
+    //   sadr: SadrRules,
+    //   sadrip: ipaddresses,
+    //   sadripService: ipaddrByService,
+    //   state: "Selectable",
 
+    // let ipadr = matrixdata.sadr
+    // let ipaddrByService = matrixdata.sadripService
+    // let ServiceNodes = matrixdata.target
 
+    let shosts = []
+    let dhosts = []
+
+    let resolvedDestinationHosts = matrixdata.rdst
+    dhosts = main.filterList(resolvedDestinationHosts, "daddress", hostSelection, false);
+    let resolvedSourceHosts = matrixdata.sadr
+    shosts = main.filterList(resolvedSourceHosts, "saddress", hostSelection, false);
+
+    
+    // let service = []
+    // for (var key in ipaddrByService) {
+    //   service = ipaddrByService[key]
+    //   // console.log("Service",service)
+
+    //   service.forEach((adr, index) => {
+    //     // console.log("Adresse",adr)
+    //     if (adr.sadr.includes(selectedHost)) {
+    //       console.log("Treffer-src", adr.sadr + ":" + key)
+    //       adr.sadr = "!" + adr.sadr
+    //       shosts.push(adr.sadr)
+    //       // ipaddrByService[key][index].sadr = adr.sadr
+    //     }
+    //     if (adr.dadr.includes(selectedHost)) {
+    //       console.log("Treffer-dst", adr.dadr + ":" + key)
+    //       adr.dadr = "!" + adr.dadr
+    //       dhosts.push(adr.dadr)
+    //       // ipaddrByService[key][index].dadr = adr.dadr
+    //     }
+
+    //   })
+    // }
+    
     shosts.forEach(element => {
-      szones.push(element.source + ":" + element.destination)
+      let pair = element.source + ":" + element.destination
+      if (!szones.includes(pair))
+        szones.push(pair)
     })
     szones.unshift('*')
+    console.log("Szones:",szones)
 
     dhosts.forEach(element => {
-      dzones.push(element.source + ":" + element.destination)
+      let pair = element.source + ":" + element.destination
+      if (!dzones.includes(pair))
+        dzones.push(pair)
     })
     dzones.unshift('*')
+    console.log("Dzones:",dzones)
   }
 
   // Lösche alte Default-Werte und setze aktuelle Werte
@@ -352,7 +418,7 @@ function setDefaultSelection(field, value) {
   field[index] = "!" + value
 }
 
-// Index für Default-Selection übergeben
+// Index für Default-Selection (mit ! gekennzeichnet)übergeben
 function getDefaultSelection(field) {
   // lösche alten Default-Wert
   let index = field.findIndex(element => element.includes("!"))

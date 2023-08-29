@@ -63,7 +63,7 @@ function prepareIPDetail(par, ipadr) {
 
 export function prepareZoneDetail(selectedSourceZone, selectedTargetZone, selectedService, data) {
 
-  let sadrip = data.sadrip
+  let sadrip        = data.sadrip
   let sadripService = data.sadripService
 
   console.log("sadrip-all", sadrip)
@@ -126,8 +126,11 @@ export function prepareZoneDetail(selectedSourceZone, selectedTargetZone, select
 // Übernahme der Daten und seitenweise (Pages) Anzeige der Firewall-Rules
 
 function firewallRules(par) {
-  par['sreenWidth'] = "750"
-  par['sreenHeight'] = "300"
+  // par['sreenWidth'] = "750"
+  // par['sreenHeight'] = "300"
+  par['sreenWidth'] = "1000"
+  par['sreenHeight'] = "500"
+  
   par['unit'] = 15
   par['objwidth'] = 12 * par['unit']
   par['BaseX'] = par['sreenWidth'] / 2 - par['objwidth'] / 2;
