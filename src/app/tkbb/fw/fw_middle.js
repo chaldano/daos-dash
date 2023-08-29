@@ -18,8 +18,8 @@ function removeTable(matrixdata) {
 function showTableSource(matrixdata, selectedSourceIndex) {
   const targetContent = createContentBox()
 
-  var sources = matrixdata.source
-  var targets = matrixdata.target
+  var sources = matrixdata.sourceNodes
+  var targets = matrixdata.serviceNodes
   var matrix = matrixdata.matrix
 
   // Table Data aus Matrix erzeugen

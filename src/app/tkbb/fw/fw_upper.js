@@ -9,8 +9,8 @@ import * as d3 from "d3";
 function drawMatrix(matrixdata) {
   const target = dom.createDisplayBox()
   
-  var sources = matrixdata.source
-  var targets = matrixdata.target
+  var sources = matrixdata.sourceNodes
+  var targets = matrixdata.serviceNodes
   var matrix = matrixdata.matrix
 
   var matrixState = matrixdata.state;

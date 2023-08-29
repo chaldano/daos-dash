@@ -282,14 +282,14 @@ function createHash(matrixdata) {
 }
 
 function createMatrix(matrixdata) {
-  var targets = matrixdata.targetNodes
+  var targets = matrixdata.serviceNodes
   var sources = matrixdata.sourceNodes
   var relationhash = matrixdata.rhash
 
   var matrix = []
   targets.forEach((target, a) => {
     sources.forEach((source, b) => {
-      console.log("Source",source)
+      // console.log("Source",source)
       var grid = {
         id: `${source.id}-${target.id}`,
         x: a,
