@@ -201,7 +201,6 @@ function selectZones(rules, szones, dzones, hostnames) {
     selectedTarget.push($(this).val())
     console.log("Target nach Click", selectedTarget)
 
-
     if (selectedHost[0] != '!*') {
       // Hostmodus
       setDefaultSelection(dzones, selectedTarget[0])

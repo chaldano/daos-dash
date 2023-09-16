@@ -46,21 +46,24 @@ export function runFirewall() {
 }
 
 
-export function analyseRules(zoneSelection) {
-  console.log("ZoneSelection:", zoneSelection)
+export function analyseRules(selectedZones) {
+  console.log("selectedZones:", selectedZones)
 
-  var rules = zoneSelection['rules']
+  var rules = selectedZones['rules']
 
   // Auflösung von Mehrfachnennung von Source und Target ) 
   var matrixdata
-  matrixdata = extractData(rules, zoneSelection['source'], zoneSelection['target'], zoneSelection['host']) // true - extrahieren 
+  matrixdata = extractData(rules, selectedZones['source'], selectedZones['target'], selectedZones['host']) // true - extrahieren 
 
-  console.log("selectedTarget", zoneSelection['target'])
-  console.log("selectedSource", zoneSelection['source'])
-  console.log("Host:", zoneSelection['host'])
+  console.log("selectedTarget", selectedZones['target'])
+  console.log("selectedSource", selectedZones['source'])
+  console.log("Host:", selectedZones['host'])
 
-// resolveUser(matrixdata)
+  // resolveUser(matrixdata)
   matrixdata = createHash(matrixdata)
+  var rhash = matrixdata['rhash']
+  console.log("RHASH:", rhash)
+
   matrixdata = createMatrix(matrixdata)
   const svgtarget = drawMatrix(matrixdata)
 }
@@ -132,8 +135,8 @@ export function getZones(rules, zone) {
 // Extrahiert Regeln auf Grundlage von Zonen
 export function extractData(rules, zoneSource, zoneTarget, selectedHost) {
   // Auflösen von zoneTarget
-  
-  console.log("SelectedHost",selectedHost)
+
+  console.log("SelectedHost", selectedHost)
 
 
 
@@ -148,7 +151,7 @@ export function extractData(rules, zoneSource, zoneTarget, selectedHost) {
   if (zoneTarget == "*") {
     DestinationRulesExtracted = resolvedDestination
     // console.log("Target")
-  
+
   }
   else {
     DestinationRulesExtracted = filterList(resolvedDestination, "destination", zoneTarget, false)
@@ -187,20 +190,19 @@ export function extractData(rules, zoneSource, zoneTarget, selectedHost) {
   // Services: Liste von src-Adressen und dadr-Adressen 
   const ipaddresses = getAdrsUser(SadrRulesUser, serviceNodes)
   console.log("Auflösung-IPAdresses")
-  console.log(ipaddresses)
+  console.log("Services IPAdr:(Liste)", ipaddresses)
 
   // Service: Paare von (SourceAdressen -> TargetAdressen)
   var ipaddrByService = getAdrsByService(SadrRulesUser, serviceNodes)
-  console.log("Services mit IPAdr:", ipaddrByService)
-
-
-  console.log("Services mit IPAdr:(Host)", ipaddrByService)
+  // console.log("Services mit IPAdr:", ipaddrByService)
+  console.log("Services IPAdr:(s-d Paar)", ipaddrByService)
 
   const matrixdata = {
     rsrc: SadrRules,
     rsrcUser: SadrRulesUser,
     rdst: DadrRules,
     zone: zoneTarget[0],
+    selHost: selectedHost,          // Selected Host mitgeben
     sourceNodes: sourceNodes,
     targetNodes: targetNodes,
     serviceNodes: serviceNodes,
@@ -251,28 +253,63 @@ function createHash(matrixdata) {
   var serviceNodes = matrixdata.serviceNodes
   var SadrRules = matrixdata.sadr
   var ipaddresses = matrixdata.sadrip
+  var selectedHost = matrixdata.selHost
+
+  console.log("Host gewählt:", selectedHost)
+  console.log("sourceNodes:", sourceNodes)
+  console.log("serviceNodes:", serviceNodes)
+  console.log("SadrRules:", SadrRules)
+  console.log("ipaddresses:", ipaddresses)
 
   const relationhash = {}
+  var z = 0
+
   sourceNodes.forEach(srcnode => {
-    SadrRules.forEach(item => {
-      if (item.source == srcnode.source) {
+    var ipsearch = []
+    SadrRules.forEach(rule => {
+      if (rule.source == srcnode.source) {
         var ipadr
-        var grid = {}
         var sourceid = srcnode.id
         var serviceid
+        var grid = {}
+        grid["selHost"] = false
+  
         for (var obj of serviceNodes) {
-          if (obj["service.app"] == item["service.app"]) {
+          if (obj["service.app"] == rule["service.app"]) {
             serviceid = obj.id
             ipadr = ipaddresses[`${srcnode.source}-${obj['service.app']}`]
+
+            if (selectedHost != '*' && ipsearch.indexOf(`${srcnode.source}-${obj['service.app']}`) === -1) {
+              // Merke, welcher IP-Index bereits durchsucht wurde
+              ipsearch.push(`${srcnode.source}-${obj['service.app']}`)
+              // console.log("ipsearch",ipsearch)
+              ipadr.sadr.forEach(adr => {
+                if (adr.includes(selectedHost)) {
+                  // console.log("Match-sadr", `${srcnode.source}-${obj['service.app']}` + " ServiceID:" + serviceid)
+                  // console.log("Match-sadr")
+                  console.log("Match-sadr", sourceid + "-" + serviceid)
+                  grid["selHost"] = true
+                }
+              })
+              ipadr.dadr.forEach(adr => {
+                if (adr.includes(selectedHost)) {
+                  console.log("Match-dadr", sourceid + "-" + serviceid)
+                  grid["selHost"] = true
+                }
+              })
             break
+            }
           }
         }
         grid.ipadr = ipadr
         grid.id = `${sourceid}-${serviceid}`
-        grid.action = item.action
-        grid.ruleid = item.ruleid
+        grid.action = rule.action
+        grid.ruleid = rule.ruleid
+        // console.log("gridSelHost",grid.selHost + " id:" + grid.id)
         // Object mit attribute als Differenz
         relationhash[grid.id] = grid
+        // console.log("Hash", relationhash[grid.id])
+
       }
     })
   })
