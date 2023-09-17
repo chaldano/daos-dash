@@ -8,7 +8,7 @@ import * as d3 from "d3";
 
 function drawMatrix(matrixdata) {
   const target = dom.createDisplayBox()
-  
+
   var sources = matrixdata.sourceNodes
   var targets = matrixdata.serviceNodes
   var matrix = matrixdata.matrix
@@ -20,13 +20,13 @@ function drawMatrix(matrixdata) {
   const screenwidth = "2600"
   const screenheight = "650"
   const unit = 15                // Matrixelementgröße
-  
+
   // Canvas Umgebung einrichten
   const canvas = new daos.Canvas(target, screenwidth, screenheight)
   canvas.BaseX = 100;
-  canvas.BaseY =  50;
+  canvas.BaseY = 50;
   canvas.Unit = unit
-  
+
   // Canvas anlegen
   daos.setCanvas(canvas, target)
   // canvas.ObjWidth = objectwidth;
@@ -92,12 +92,21 @@ function drawMatrix(matrixdata) {
     .enter()
     .append("rect")
     .attr("class", "grid")
+    // .attr("class", d => d.class)
     .attr("width", rectwidth)
     .attr("height", rectwidth)
     .attr("x", d => d.x * rectwidth)
     .attr("y", d => d.y * rectwidth)
-    .style("fill-opacity", d => d.weight * .2);
-
+    // .style("fill-opacity", d => d.weight * .2);
+    // .style("fill-opacity", d => d.weight)
+    .style("fill", d => {
+      if (d.weight == 2) {
+        return "red"
+      }
+      if (d.weight == 3) {
+        return "yellow"
+      }
+    });
 
   // Setze Matrix Axen-Beschriftung
   sel
@@ -154,15 +163,18 @@ function drawMatrix(matrixdata) {
     .attr("y", (d, i) => i * rectwidth + rectwidth / 2)
     .text(d => d.source)
     .style("text-anchor", "end");
-  
+
   const box = d3.select('#' + target)
   box.selectAll("rect.grid").on("mouseover", gridOver);
+  // box.selectAll("rect.gridhost").on("mouseover", gridOver);
   box.selectAll("rect.grid").on("mouseout", gridOut);
+  // box.selectAll("rect.gridhost").on("mouseout", gridOut);
   box.selectAll("rect.grid").on("click", gridState);
+  // box.selectAll("rect.gridhost").on("click", gridState);
 
   function gridOver(event, d) {
     // console.log("Durch over", matrixState)
-    
+
     if (matrixState == "Selectable") {
       box.selectAll("rect.grid").attr("class", p => {
         if (p.x == d.x || p.y == d.y) {
@@ -235,9 +247,10 @@ function drawMatrix(matrixdata) {
       // Status setzen
       matrixState = "Selected"
       var index
-      box.selectAll("rect.gridovered").attr("class", p => { 
+      box.selectAll("rect.gridovered").attr("class", p => {
         index = p.y
-        return "gridselected" })
+        return "gridselected"
+      })
       // p.y kennzeichnet die selektierte Zeile
       showTableSource(matrixdata, index)
     }

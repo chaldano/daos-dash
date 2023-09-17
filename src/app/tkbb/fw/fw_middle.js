@@ -21,7 +21,7 @@ function showTableSource(matrixdata, selectedSourceIndex) {
   var sources = matrixdata.sourceNodes
   var targets = matrixdata.serviceNodes
   var matrix = matrixdata.matrix
-
+  console.log("Matrix-Table",matrix)
   // Table Data aus Matrix erzeugen
   var tablerules = []
   var indextab = 0
@@ -32,7 +32,7 @@ function showTableSource(matrixdata, selectedSourceIndex) {
       var ids = node.id.split('-')
       var sourceindex = ids[0]
       var targetindex = ids[1]
-
+      console.log("Split:",ids)
       if (sourceindex == selectedSourceIndex) {
         var source = sources[sourceindex]
         var target = targets[targetindex]

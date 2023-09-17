@@ -262,57 +262,53 @@ function createHash(matrixdata) {
   console.log("ipaddresses:", ipaddresses)
 
   const relationhash = {}
-  var z = 0
-
   sourceNodes.forEach(srcnode => {
-    var ipsearch = []
     SadrRules.forEach(rule => {
       if (rule.source == srcnode.source) {
         var ipadr
+        var grid = {}
         var sourceid = srcnode.id
         var serviceid
-        var grid = {}
         grid["selHost"] = false
-  
         for (var obj of serviceNodes) {
           if (obj["service.app"] == rule["service.app"]) {
             serviceid = obj.id
             ipadr = ipaddresses[`${srcnode.source}-${obj['service.app']}`]
-
-            if (selectedHost != '*' && ipsearch.indexOf(`${srcnode.source}-${obj['service.app']}`) === -1) {
-              // Merke, welcher IP-Index bereits durchsucht wurde
-              ipsearch.push(`${srcnode.source}-${obj['service.app']}`)
-              // console.log("ipsearch",ipsearch)
-              ipadr.sadr.forEach(adr => {
-                if (adr.includes(selectedHost)) {
-                  // console.log("Match-sadr", `${srcnode.source}-${obj['service.app']}` + " ServiceID:" + serviceid)
-                  // console.log("Match-sadr")
-                  console.log("Match-sadr", sourceid + "-" + serviceid)
-                  grid["selHost"] = true
-                }
-              })
-              ipadr.dadr.forEach(adr => {
-                if (adr.includes(selectedHost)) {
-                  console.log("Match-dadr", sourceid + "-" + serviceid)
-                  grid["selHost"] = true
-                }
-              })
             break
-            }
           }
         }
         grid.ipadr = ipadr
         grid.id = `${sourceid}-${serviceid}`
         grid.action = rule.action
         grid.ruleid = rule.ruleid
-        // console.log("gridSelHost",grid.selHost + " id:" + grid.id)
-        // Object mit attribute als Differenz
         relationhash[grid.id] = grid
-        // console.log("Hash", relationhash[grid.id])
-
       }
     })
   })
+  // Hostmodus: Kennzeichnen, wo ein Host im Hash enthalten ist
+  // grid.selHost wird auf True gesetzt
+  if (selectedHost != '*') {
+    var hashKeys = Object.keys(relationhash)
+    hashKeys.forEach(hashid => {
+      var grid = relationhash[hashid]
+      var ipadr = grid.ipadr
+      // Durchsuchen in src und dst nach Host
+      // SRC
+      ipadr.sadr.forEach(adr => {
+        if (adr.includes(selectedHost)) {
+          grid["selHost"] = true
+          relationhash[hashid] = grid
+        }
+      })
+      // DST
+      ipadr.dadr.forEach(adr => {
+        if (adr.includes(selectedHost)) {
+          grid["selHost"] = true
+          relationhash[hashid] = grid
+        }
+      })
+    })
+  }
 
   matrixdata['rhash'] = relationhash
   return matrixdata
@@ -330,14 +326,27 @@ function createMatrix(matrixdata) {
       var grid = {
         id: `${source.id}-${target.id}`,
         x: a,
-        y: b, action: 0, weight: 0
+        y: b, 
+        action: 0, 
+        weight: 0,
+        // class: "grid"
       };
       if (relationhash[grid.id]) {
         grid.action = relationhash[grid.id].action;
         grid.ruleid = relationhash[grid.id].ruleid;
+        // grid.ruleid = relationhash[grid.id].ruleid;
         if (grid.action == "ALLOW") {
-          grid.weight = 5
+          grid.weight = 1   // Allow gesetzt
+          if (relationhash[grid.id].selHost) { // Selected Host gesetzt
+            console.log ("Match HostSel",grid.id)
+            // grid.class = "gridhost"     
+            grid.weight = 3     
+          }
         }
+        if (grid.action == "DENY") {
+          grid.weight = 2   // Allow gesetzt
+        }
+
         matrix.push(grid);
       }
       else {
