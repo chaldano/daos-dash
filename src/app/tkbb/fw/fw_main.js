@@ -326,8 +326,8 @@ function createMatrix(matrixdata) {
       var grid = {
         id: `${source.id}-${target.id}`,
         x: a,
-        y: b, 
-        action: 0, 
+        y: b,
+        action: 0,
         weight: 0,
         // class: "grid"
       };
@@ -337,10 +337,11 @@ function createMatrix(matrixdata) {
         // grid.ruleid = relationhash[grid.id].ruleid;
         if (grid.action == "ALLOW") {
           grid.weight = 1   // Allow gesetzt
+          // Prüfen, ob selektierter Host erkann
           if (relationhash[grid.id].selHost) { // Selected Host gesetzt
-            console.log ("Match HostSel",grid.id)
+            console.log("Match HostSel", grid.id)
             // grid.class = "gridhost"     
-            grid.weight = 3     
+            grid.weight = 3
           }
         }
         if (grid.action == "DENY") {
