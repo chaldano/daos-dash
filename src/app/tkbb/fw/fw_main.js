@@ -347,12 +347,11 @@ function createMatrix(matrixdata) {
         if (grid.action == "DENY") {
           grid.weight = 2   // Allow gesetzt
         }
-
-        matrix.push(grid);
+        // matrix.push(grid);
       }
-      else {
-        matrix.push(grid);
-      }
+      // else {
+      matrix.push(grid);
+      // }
     });
   });
   matrixdata['matrix'] = matrix
