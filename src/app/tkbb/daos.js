@@ -23,10 +23,10 @@ export class Canvas {
         this._baseX = 0
         this._target = target
         this._unit = 0
-        this._id = "svg"+target
-        
+        this._id = "canvas" + target
+
     }
-        
+
     get ID() {
         return this._id
     }
@@ -76,13 +76,36 @@ export function setCanvas(canvas) {
     const box = d3.select('#' + canvas.Target)
     // console.log("Canvas", canvas.ID)
     box
-      .append('svg')
-      .attr("class","canvas")
-      .attr("width", canvas.Width)
-      .attr("height", canvas.Height)
-      .attr("id", canvas.ID)
-  }
-  
+        .append('svg')
+        .attr("class", "canvas")
+        .attr("width", canvas.Width)
+        .attr("height", canvas.Height)
+        .attr("id", canvas.ID)
+}
+
+export function setCanvasRes(target, height, width) {
+    // Wähle container aus
+    const canbox = d3.select('#' + target)
+    const canid = "canvas" + target
+    const svgid = "svg" + canid
+
+    // console.log("Canvas", canvas.ID)
+    canbox
+        // .append('canvas')
+        // .attr("class", "canvas")
+        // .attr("width", width)
+        // .attr("height", height)
+        // .attr("id", canid)
+        // svg anlegen
+
+        .append('svg')
+        .classed("svg-content", true)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 " + width + " " + height + "")
+        .attr("id", svgid)
+    return svgid
+}
+
 
 // Klasse für einen Raum
 export class Daos {
@@ -94,11 +117,11 @@ export class Daos {
     }
 }
 
-export class Circle  {
-    constructor (r){
-    this._r = r
-    this._x = 0
-    this._y = 0
+export class Circle {
+    constructor(r) {
+        this._r = r
+        this._x = 0
+        this._y = 0
     }
 }
 
@@ -107,7 +130,7 @@ export class Net {
         this._name = name
         this._adr = ipadr
         this.geo = 'circle'
-        this.r  = 5
+        this.r = 5
     }
     get Name() {
         return this._name
@@ -120,12 +143,12 @@ export class Net {
 export class Proxy {
     constructor(name, ipadr, service) {
         this._name = name
-        this.pointtype ='proxy'
+        this.pointtype = 'proxy'
         this.adr = ipadr
         this._svc = service
         this._geo = 'rect'
-        this._width   = 10
-        this._height  = 10
+        this._width = 10
+        this._height = 10
     }
     get Name() {
         return this._name
@@ -142,8 +165,8 @@ export class Service {
     constructor(name) {
         this._name = name
         this._geo = 'rect'
-        this._width   = 10
-        this._height  = 10
+        this._width = 10
+        this._height = 10
     }
     get Name() {
         return this._name
@@ -152,10 +175,10 @@ export class Service {
 export class Zone {
     constructor(name, type) {
         this._name = name,
-        this._class = type
+            this._class = type
         this._geo = 'rect'
-        this._width   = 20
-        this._height  = 10
+        this._width = 20
+        this._height = 10
         this._test = 5
     }
     get Name() {
@@ -169,3 +192,27 @@ export class Zone {
     }
 }
 
+// Berechnet aus einer Feldlänge eine passene Witdh für die Abbildung 
+// in einer viewBox
+export function WidthResolution(a) {
+
+    const hres = 300
+
+    let restvalue = {
+        ganz: 0,
+        diff: 0
+    }
+
+    restvalue.ganz = Math.floor(a / hres)
+    restvalue.diff = a % hres
+
+    console.log("Ganz", restvalue.ganz)
+    console.log("Rest", restvalue.diff)
+
+    let screenwidth = restvalue.ganz * hres
+    if (restvalue.diff > 0) {
+        screenwidth = screenwidth + hres
+    }
+    return screenwidth
+
+}

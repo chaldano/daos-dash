@@ -15,32 +15,37 @@ function drawMatrix(matrixdata) {
 
   var matrixState = matrixdata.state;
 
-  // console.log("Matrix", matrixdata.matrix)
+  console.log("Matrix", matrix)
+  console.log("Targets", targets)
+  console.log("Sources", sources)
 
-  const screenwidth = "2600"
-  const screenheight = "650"
-  const unit = 15                // Matrixelementgröße
+  // const screenwidth = "2600"
+  // const screenheight = "650"
+  
+   
+  
+  const BaseX = 150;
+  const BaseY = 50;
+  const textdistance = "10"
+  const unit = 15                   // Matrixelementgröße
+  const rectwidth = unit            // Matrixelementgröße
+  const matrixhead = 2 * rectwidth
+  
+  const screenwidth = daos.WidthResolution(targets.length * unit + 1.1*BaseX)
+  const screenheight = "700"
 
-  // Canvas Umgebung einrichten
-  const canvas = new daos.Canvas(target, screenwidth, screenheight)
-  canvas.BaseX = 100;
-  canvas.BaseY = 50;
-  canvas.Unit = unit
+  console.log("ViewBox-width", screenwidth)
+  console.log("ViewBox-height", screenheight)
 
   // Canvas anlegen
-  daos.setCanvas(canvas, target)
-  // canvas.ObjWidth = objectwidth;
-
-  const textdistance = "10"
-
+  const svgid = daos.setCanvasRes(target,screenheight, screenwidth)
+  
   // Matrixbereich
-  const matrixX = canvas.BaseX
-  const matrixY = canvas.BaseY
-  const rectwidth = 15            // Matrixelementgröße
-
+  const matrixX = BaseX
+  const matrixY = BaseY
+  
   // Beschriftungsbereich und Parameter der Matrix
   const matrixTid = "matrixTL"
-  const matrixhead = 2 * rectwidth
   const matrixid = "matrix"
   const matrixTx = matrixX - matrixhead
   const matrixTy = matrixY - matrixhead
@@ -65,6 +70,7 @@ function drawMatrix(matrixdata) {
   const sourceTx = matrixX - textdistance
   const sourceTy = matrixY
 
+  console.log("SVGID",svgid)
 
 
   // Source-Text-Beschriftung
@@ -81,7 +87,7 @@ function drawMatrix(matrixdata) {
   //   .attr("id", svgid)
 
   // Setze Matrix-Bereich  
-  var sel = d3.select("#" + canvas.ID)
+  var sel = d3.select("#" + svgid)
   sel
     .append("g")
     .attr("transform", "translate(" + matrixX + "," + matrixY + ")")
@@ -97,14 +103,16 @@ function drawMatrix(matrixdata) {
     .attr("height", rectwidth)
     .attr("x", d => d.x * rectwidth)
     .attr("y", d => d.y * rectwidth)
-    // .style("fill-opacity", d => d.weight * .2);
-    // .style("fill-opacity", d => d.weight)
     .style("fill", d => {
       if (d.weight == 2) {
         return "red"
       }
       if (d.weight == 3) {
         return "yellow"
+      }
+      if (d.weight == 1) {
+        // spezielles blau
+        return "#2669bf"
       }
     });
 

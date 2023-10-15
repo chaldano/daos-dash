@@ -78,6 +78,7 @@ function createDisplayBox() {
     // DisplayBox.addClass('bg-info')
     // DisplayBox.addClass('text-white')
     DisplayBox.addClass('displayBox')
+    DisplayBox.addClass('svg-container')
     return boxID
 }
 
